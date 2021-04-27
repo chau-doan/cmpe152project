@@ -9,7 +9,7 @@ grammar go;
 }
 
 program           : programHeader block '.' ;
-programHeader     : PACKAGE programIdentifier;
+programHeader     : PACKAGE ' ' programIdentifier  '\n';
 
 programIdentifier   locals [ SymtabEntry *entry = nullptr ]
     : IDENTIFIER ;
@@ -42,6 +42,8 @@ typeIdentifier      locals [ Typespec *type = nullptr, SymtabEntry *entry = null
 
 typeSpecification   locals [ Typespec *type = nullptr ]
     : simpleType        # simpleTypespec
+    | arrayType         # arrayTypespec 
+    | recordType        # recordTypespec
     ;
 
 simpleType          locals [ Typespec *type = nullptr ] 
@@ -53,11 +55,15 @@ simpleType          locals [ Typespec *type = nullptr ]
 enumerationType     : '(' enumerationConstant ( ',' enumerationConstant )* ')' ;
 enumerationConstant : constantIdentifier ;
 subrangeType        : constant '..' constant ;
-/* 
+
 arrayType
-    : ARRAY '[' arrayDimensionList ']' typeSpecification ;
+    : ARRAY '[' arrayDimensionList ']' OF typeSpecification ;
 arrayDimensionList : simpleType ( ',' simpleType )* ;
-*/       
+
+recordType          locals [ SymtabEntry *entry = nullptr ]   
+    : RECORD recordFields ';'? END ;
+recordFields : variableDeclarationsList ;
+ 
 variablesPart            : VAR variableDeclarationsList ;
 variableDeclarationsList : variableDeclarations;
 variableDeclarations     : variableIdentifierList ':' typeSpecification ;
@@ -68,12 +74,12 @@ variableIdentifier  locals [ Typespec *type = nullptr, SymtabEntry *entry = null
 
 routinesPart      : routineDefinition (routineDefinition)* ;
 routineDefinition : functionHead '(' parameters ')' TYPE? block ;
-functionHead      : FUNC  routineIdentifier parameters? ':' typeIdentifier ;
+functionHead      : FUNC ' ' routineIdentifier parameters? ':' typeIdentifier ;
 
 routineIdentifier   locals [ Typespec *type = nullptr, SymtabEntry *entry = nullptr ]
     : IDENTIFIER ;
 
-parameters                : '(' parameterDeclarationsList ')' ;
+parameters                : '(' parameterDeclarationsList? ')' ;
 parameterDeclarationsList : parameterDeclarations ( ';' parameterDeclarations )* ;
 parameterDeclarations     : VAR? parameterIdentifierList ':' typeIdentifier ;
 parameterIdentifierList   : parameterIdentifier ( ',' parameterIdentifier )* ;
@@ -107,7 +113,7 @@ trueStatement  : statement ;
 falseStatement : statement ;
 
 caseStatement
-        locals [ map<int, PascalParser::StatementContext*> *jumpTable = nullptr ]
+        locals [ map<int, goParser::StatementContext*> *jumpTable = nullptr ]
     : SWITCH expression '{' caseBranchList '}' ;
     
 caseBranchList   : caseBranch ( ';' caseBranch )* ( ';' DEFAULT ':' statement);
@@ -116,9 +122,8 @@ caseBranch       : CASE caseConstant ':' statement | ;
 caseConstant        locals [ Typespec *type = nullptr, int value = 0 ]
     : constant ;
 
-forStatement : FOR ( expression | (variable ':=' expression ';' expression ';' assignmentStatement))?
-                    statement ;
-
+forStatement : FOR ( whileStatement | (variable ':=' expression ';' expression ';' assignmentStatement statement));
+whileStatement: expression statement;
 procedureCallStatement : procedureName '(' argumentList? ')' ;
 
 procedureName   locals [ SymtabEntry *entry = nullptr ] 
@@ -127,8 +132,8 @@ procedureName   locals [ SymtabEntry *entry = nullptr ]
 argumentList : argument ( ',' argument )* ;
 argument     : expression ;
 
-writeStatement   : PRINT writeArguments ;
-writelnStatement : PRINTLN writeArguments? ;
+writeStatement   : FMT '.' PRINT writeArguments ;
+writelnStatement : FMT '.' PRINTLN writeArguments? ;
 writeArguments   : '(' writeArgument (',' writeArgument)* ')' ;
 writeArgument    : expression (':' fieldWidth)? ;
 fieldWidth       : sign? integerConstant (':' decimalPlaces)? ;
@@ -231,6 +236,7 @@ PRINTLN   : P R I N T L N ;
 FUNC 	  : F U N C ;  
 SWITCH    : S W I T C H;		
 DEFAULT   : D E F A U L T;
+FMT 	  : F M T;	
 
 
 IDENTIFIER : [a-zA-Z][a-zA-Z0-9]* ;

@@ -161,9 +161,9 @@ target/generated-sources/antlr4/goBaseVisitor.o: \
   /Users/huyduong/eclipse-workspace/CMPE_152_project/intermediate/symtab/../../Object.h \
   /Users/huyduong/eclipse-workspace/CMPE_152_project/intermediate/type/Typespec.h \
   /Users/huyduong/eclipse-workspace/CMPE_152_project/intermediate/type/../../Object.h \
-  ../target/generated-sources/antlr4/goBaseVisitor.h \
-  ../target/generated-sources/antlr4/goVisitor.h \
-  ../target/generated-sources/antlr4/goParser.h
+  /Users/huyduong/eclipse-workspace/CMPE_152_project/target/generated-sources/antlr4/goBaseVisitor.h \
+  /Users/huyduong/eclipse-workspace/CMPE_152_project/target/generated-sources/antlr4/goVisitor.h \
+  /Users/huyduong/eclipse-workspace/CMPE_152_project/target/generated-sources/antlr4/goParser.h
 
 /Users/huyduong/eclipse-workspace/CMPE_152_project/intermediate/symtab/Symtab.h:
 
@@ -487,8 +487,8 @@ target/generated-sources/antlr4/goBaseVisitor.o: \
 
 /Users/huyduong/eclipse-workspace/CMPE_152_project/intermediate/type/../../Object.h:
 
-../target/generated-sources/antlr4/goBaseVisitor.h:
+/Users/huyduong/eclipse-workspace/CMPE_152_project/target/generated-sources/antlr4/goBaseVisitor.h:
 
-../target/generated-sources/antlr4/goVisitor.h:
+/Users/huyduong/eclipse-workspace/CMPE_152_project/target/generated-sources/antlr4/goVisitor.h:
 
-../target/generated-sources/antlr4/goParser.h:
+/Users/huyduong/eclipse-workspace/CMPE_152_project/target/generated-sources/antlr4/goParser.h:

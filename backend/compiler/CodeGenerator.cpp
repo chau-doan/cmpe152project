@@ -11,7 +11,7 @@
 #include <iomanip>
 #include <chrono>
 
-#include "PascalBaseVisitor.h"
+#include "goBaseVisitor.h"
 #include "antlr4-runtime.h"
 
 #include "intermediate/symtab/Predefined.h"
@@ -74,7 +74,7 @@ void CodeGenerator::emitComment(string text)
  * Emit a statement comment.
  * @param ctx the StatementContext.
  */
-void CodeGenerator::emitComment(PascalParser::StatementContext *ctx)
+void CodeGenerator::emitComment(goParser::StatementContext *ctx)
 {
     string text = ctx->getText();
     if (text.length() > 70) text = text.substr(0, 70) + " ...";
@@ -558,59 +558,59 @@ string CodeGenerator::typeDescriptor(SymtabEntry *id)
     Typespec *type = id->getType();
     return type != nullptr ? typeDescriptor(type) : "V";
 }
-string CodeGenerator::typeDescriptor(Typespec *pascalType)
+string CodeGenerator::typeDescriptor(Typespec *goType)
 {
-    Form form = pascalType->getForm();
+    Form form = goType->getForm();
     string descriptor;
 
     while (form == ARRAY)
     {
         descriptor += "[";
-        pascalType =  pascalType->getArrayElementType();
-        form = pascalType->getForm();
+        goType =  goType->getArrayElementType();
+        form = goType->getForm();
     }
 
-    pascalType = pascalType->baseType();
+    goType = goType->baseType();
     string str;
 
-    if      (pascalType == Predefined::integerType) str = "I";
-    else if (pascalType == Predefined::realType)    str = "F";
-    else if (pascalType == Predefined::booleanType) str = "Z";
-    else if (pascalType == Predefined::charType)    str = "C";
-    else if (pascalType == Predefined::stringType)  str = "Ljava/lang/String;";
+    if      (goType == Predefined::integerType) str = "I";
+    else if (goType == Predefined::realType)    str = "F";
+    else if (goType == Predefined::booleanType) str = "Z";
+    else if (goType == Predefined::charType)    str = "C";
+    else if (goType == Predefined::stringType)  str = "Ljava/lang/String;";
     else if (form == ENUMERATION)                  str = "I";
-    else /* (form == RECORD) */ str = "L" + pascalType->getRecordTypePath() + ";";
+    else /* (form == RECORD) */ str = "L" + goType->getRecordTypePath() + ";";
 
     descriptor += str;
     return descriptor;
 }
 
-string CodeGenerator::objectTypeName(Typespec *pascalType)
+string CodeGenerator::objectTypeName(Typespec *goType)
 {
-    Form form = pascalType->getForm();
+    Form form = goType->getForm();
     string typeName;
     bool isArray = false;
 
     while (form == ARRAY)
     {
         typeName += "[";
-        pascalType = pascalType->getArrayElementType();
-        form = pascalType->getForm();
+        goType = goType->getArrayElementType();
+        form = goType->getForm();
         isArray = true;
     }
 
     if (isArray)  typeName += "L";
 
-    pascalType = pascalType->baseType();
+    goType = goType->baseType();
     string str;
 
-    if      (pascalType == Predefined::integerType) str = "java/lang/Integer";
-    else if (pascalType == Predefined::realType)    str = "java/lang/Float";
-    else if (pascalType == Predefined::booleanType) str = "java/lang/Boolean";
-    else if (pascalType == Predefined::charType)    str = "java/lang/Character";
-    else if (pascalType == Predefined::stringType)  str = "Ljava/lang/String;";
+    if      (goType == Predefined::integerType) str = "java/lang/Integer";
+    else if (goType == Predefined::realType)    str = "java/lang/Float";
+    else if (goType == Predefined::booleanType) str = "java/lang/Boolean";
+    else if (goType == Predefined::charType)    str = "java/lang/Character";
+    else if (goType == Predefined::stringType)  str = "Ljava/lang/String;";
     else if (form == ENUMERATION)                  str = "java/lang/Integer";
-    else /* (form == RECORD) */ str = "L" + pascalType->getRecordTypePath() + ";";
+    else /* (form == RECORD) */ str = "L" + goType->getRecordTypePath() + ";";
 
     typeName += str;
     if (isArray) typeName += ";";

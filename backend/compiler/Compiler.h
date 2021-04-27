@@ -1,7 +1,7 @@
 #ifndef COMPILER_H_
 #define COMPILER_H_
 
-#include "PascalBaseVisitor.h"
+#include "goBaseVisitor.h"
 #include "antlr4-runtime.h"
 
 #include "intermediate/symtab/SymtabStack.h"
@@ -19,7 +19,7 @@ using namespace intermediate::type;
 
 class CodeGenerator;
 
-class Compiler : public PascalBaseVisitor
+class Compiler : public goBaseVisitor
 {
 private:
     SymtabEntry *programId;  // symbol table entry of the program name
@@ -70,29 +70,29 @@ public:
      */
     string getObjectFileName() { return code->getObjectFileName(); }
 
-    Object visitProgram(PascalParser::ProgramContext *ctx) override;
-    Object visitRoutineDefinition(PascalParser::RoutineDefinitionContext *ctx) override;
-    Object visitStatement(PascalParser::StatementContext *ctx) override;
-    Object visitAssignmentStatement(PascalParser::AssignmentStatementContext *ctx) override;
-    Object visitIfStatement(PascalParser::IfStatementContext *ctx) override;
-    Object visitCaseStatement(PascalParser::CaseStatementContext *ctx) override;
-    Object visitRepeatStatement(PascalParser::RepeatStatementContext *ctx) override;
-    Object visitWhileStatement(PascalParser::WhileStatementContext *ctx) override;
-    Object visitForStatement(PascalParser::ForStatementContext *ctx) override;
-    Object visitProcedureCallStatement(PascalParser::ProcedureCallStatementContext *ctx) override;
-    Object visitExpression(PascalParser::ExpressionContext *ctx) override;
-    Object visitVariableFactor(PascalParser::VariableFactorContext *ctx) override;
-    Object visitVariable(PascalParser::VariableContext *ctx) override;
-    Object visitNumberFactor(PascalParser::NumberFactorContext *ctx) override;
-    Object visitCharacterFactor(PascalParser::CharacterFactorContext *ctx) override;
-    Object visitStringFactor(PascalParser::StringFactorContext *ctx) override;
-    Object visitFunctionCallFactor(PascalParser::FunctionCallFactorContext *context) override;
-    Object visitNotFactor(PascalParser::NotFactorContext *ctx) override;
-    Object visitParenthesizedFactor(PascalParser::ParenthesizedFactorContext *ctx) override;
-    Object visitWriteStatement(PascalParser::WriteStatementContext *ctx) override;
-    Object visitWritelnStatement(PascalParser::WritelnStatementContext *ctx) override;
-    Object visitReadStatement(PascalParser::ReadStatementContext *ctx) override;
-    Object visitReadlnStatement(PascalParser::ReadlnStatementContext *ctx) override;
+    Object visitProgram(goParser::ProgramContext *ctx) override;
+    Object visitRoutineDefinition(goParser::RoutineDefinitionContext *ctx) override;
+    Object visitStatement(goParser::StatementContext *ctx) override;
+    Object visitAssignmentStatement(goParser::AssignmentStatementContext *ctx) override;
+    Object visitIfStatement(goParser::IfStatementContext *ctx) override;
+    Object visitCaseStatement(goParser::CaseStatementContext *ctx) override;
+//    Object visitRepeatStatement(goParser::RepeatStatementContext *ctx) override;
+    Object visitWhileStatement(goParser::WhileStatementContext *ctx) override;
+    Object visitForStatement(goParser::ForStatementContext *ctx) override;
+//    Object visitProcedureCallStatement(goParser::ProcedureCallStatementContext *ctx) override;
+    Object visitExpression(goParser::ExpressionContext *ctx) override;
+    Object visitVariableFactor(goParser::VariableFactorContext *ctx) override;
+    Object visitVariable(goParser::VariableContext *ctx) override;
+    Object visitNumberFactor(goParser::NumberFactorContext *ctx) override;
+    Object visitCharacterFactor(goParser::CharacterFactorContext *ctx) override;
+    Object visitStringFactor(goParser::StringFactorContext *ctx) override;
+    Object visitFunctionCallFactor(goParser::FunctionCallFactorContext *context) override;
+    Object visitNotFactor(goParser::NotFactorContext *ctx) override;
+    Object visitParenthesizedFactor(goParser::ParenthesizedFactorContext *ctx) override;
+    Object visitWriteStatement(goParser::WriteStatementContext *ctx) override;
+    Object visitWritelnStatement(goParser::WritelnStatementContext *ctx) override;
+//    Object visitReadStatement(goParser::ReadStatementContext *ctx) override;
+//    Object visitReadlnStatement(goParser::ReadlnStatementContext *ctx) override;
 
 private:
     /**

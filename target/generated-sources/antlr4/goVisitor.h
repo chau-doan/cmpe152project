@@ -58,6 +58,10 @@ public:
 
     virtual antlrcpp::Any visitSimpleTypespec(goParser::SimpleTypespecContext *context) = 0;
 
+    virtual antlrcpp::Any visitArrayTypespec(goParser::ArrayTypespecContext *context) = 0;
+
+    virtual antlrcpp::Any visitRecordTypespec(goParser::RecordTypespecContext *context) = 0;
+
     virtual antlrcpp::Any visitTypeIdentifierTypespec(goParser::TypeIdentifierTypespecContext *context) = 0;
 
     virtual antlrcpp::Any visitEnumerationTypespec(goParser::EnumerationTypespecContext *context) = 0;
@@ -69,6 +73,14 @@ public:
     virtual antlrcpp::Any visitEnumerationConstant(goParser::EnumerationConstantContext *context) = 0;
 
     virtual antlrcpp::Any visitSubrangeType(goParser::SubrangeTypeContext *context) = 0;
+
+    virtual antlrcpp::Any visitArrayType(goParser::ArrayTypeContext *context) = 0;
+
+    virtual antlrcpp::Any visitArrayDimensionList(goParser::ArrayDimensionListContext *context) = 0;
+
+    virtual antlrcpp::Any visitRecordType(goParser::RecordTypeContext *context) = 0;
+
+    virtual antlrcpp::Any visitRecordFields(goParser::RecordFieldsContext *context) = 0;
 
     virtual antlrcpp::Any visitVariablesPart(goParser::VariablesPartContext *context) = 0;
 
@@ -127,6 +139,8 @@ public:
     virtual antlrcpp::Any visitCaseConstant(goParser::CaseConstantContext *context) = 0;
 
     virtual antlrcpp::Any visitForStatement(goParser::ForStatementContext *context) = 0;
+
+    virtual antlrcpp::Any visitWhileStatement(goParser::WhileStatementContext *context) = 0;
 
     virtual antlrcpp::Any visitProcedureCallStatement(goParser::ProcedureCallStatementContext *context) = 0;
 

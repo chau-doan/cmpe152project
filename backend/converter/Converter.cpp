@@ -1,4 +1,4 @@
-#include "PascalBaseVisitor.h"
+#include "goBaseVisitor.h"
 #include "antlr4-runtime.h"
 
 #include "../../Object.h"
@@ -9,7 +9,7 @@
 
 namespace backend { namespace converter {
 
-Object Converter::visitProgram(PascalParser::ProgramContext *ctx)
+Object Converter::visitProgram(goParser::ProgramContext *ctx)
 {
     visit(ctx->programHeader());
 
@@ -44,7 +44,7 @@ Object Converter::visitProgram(PascalParser::ProgramContext *ctx)
     return nullptr;
 }
 
-Object Converter::visitProgramHeader(PascalParser::ProgramHeaderContext *ctx)
+Object Converter::visitProgramHeader(goParser::ProgramHeaderContext *ctx)
 {
     string programName = ctx->programIdentifier()->IDENTIFIER()->getText();
     code.open(programName, "cpp");
@@ -62,14 +62,14 @@ Object Converter::visitProgramHeader(PascalParser::ProgramHeaderContext *ctx)
 }
 
 Object Converter::visitConstantDefinition(
-                                PascalParser::ConstantDefinitionContext *ctx)
+                                goParser::ConstantDefinitionContext *ctx)
 {
-    PascalParser::ConstantIdentifierContext *idCtx = ctx->constantIdentifier();
-    PascalParser::ConstantContext *constCtx = ctx->constant();
+    goParser::ConstantIdentifierContext *idCtx = ctx->constantIdentifier();
+    goParser::ConstantContext *constCtx = ctx->constant();
     string constantName = idCtx->entry->getName();
     Typespec *type = constCtx->type;
-    string pascalTypeName = type->getIdentifier()->getName();
-    string cppTypeName = typeNameTable[pascalTypeName];
+    string goTypeName = type->getIdentifier()->getName();
+    string cppTypeName = typeNameTable[goTypeName];
 
     code.emitStart();
     code.emitEnd("const " + cppTypeName + " " + constantName + " = "
@@ -78,11 +78,11 @@ Object Converter::visitConstantDefinition(
     return nullptr;
 }
 
-Object Converter::visitTypeDefinition(PascalParser::TypeDefinitionContext *ctx)
+Object Converter::visitTypeDefinition(goParser::TypeDefinitionContext *ctx)
 {
-    PascalParser::TypeIdentifierContext *idCtx = ctx->typeIdentifier();
+    goParser::TypeIdentifierContext *idCtx = ctx->typeIdentifier();
     string typeName = idCtx->entry->getName();
-    PascalParser::TypeSpecificationContext *typeCtx = ctx->typeSpecification();
+    goParser::TypeSpecificationContext *typeCtx = ctx->typeSpecification();
     Form form = typeCtx->type->getForm();
 
     if (form == ENUMERATION)
@@ -110,11 +110,11 @@ Object Converter::visitTypeDefinition(PascalParser::TypeDefinitionContext *ctx)
 }
 
 Object Converter::visitEnumerationTypespec(
-                                PascalParser::EnumerationTypespecContext *ctx)
+                                goParser::EnumerationTypespecContext *ctx)
 {
     string separator = " {";
 
-    for (PascalParser::EnumerationConstantContext *constCtx :
+    for (goParser::EnumerationConstantContext *constCtx :
                                 ctx->enumerationType()->enumerationConstant())
     {
         code.emit(separator + constCtx->constantIdentifier()->entry->getName());
@@ -167,9 +167,9 @@ void Converter::emitRecordFields(Symtab *symtab)
     }
 }
 
-Object Converter::visitRecordTypespec(PascalParser::RecordTypespecContext *ctx)
+Object Converter::visitRecordTypespec(goParser::RecordTypespecContext *ctx)
 {
-    PascalParser::RecordFieldsContext *fieldsCtx =
+    goParser::RecordFieldsContext *fieldsCtx =
                                             ctx->recordType()->recordFields();
     recordFields = true;
     visit(fieldsCtx->variableDeclarationsList());
@@ -179,13 +179,13 @@ Object Converter::visitRecordTypespec(PascalParser::RecordTypespecContext *ctx)
 }
 
 Object Converter::visitVariableDeclarations(
-                                PascalParser::VariableDeclarationsContext *ctx)
+                                goParser::VariableDeclarationsContext *ctx)
 {
-    PascalParser::TypeSpecificationContext *typeCtx = ctx->typeSpecification();
-    PascalParser::VariableIdentifierListContext *listCtx =
+    goParser::TypeSpecificationContext *typeCtx = ctx->typeSpecification();
+    goParser::VariableIdentifierListContext *listCtx =
                                                 ctx->variableIdentifierList();
 
-    for (PascalParser::VariableIdentifierContext *varCtx :
+    for (goParser::VariableIdentifierContext *varCtx :
                                                 listCtx->variableIdentifier())
     {
         code.emitStart();
@@ -212,53 +212,53 @@ void Converter::emitArrayDimensions(Typespec *type)
     code.emit(sizes);
 }
 
-string Converter::typeName(Typespec *pascalType)
+string Converter::typeName(Typespec *goType)
 {
-    Form form = pascalType->getForm();
-    SymtabEntry *typeId = pascalType->getIdentifier();
-    string pascalTypeName = typeId != nullptr ? typeId->getName() : "";
+    Form form = goType->getForm();
+    SymtabEntry *typeId = goType->getIdentifier();
+    string goTypeName = typeId != nullptr ? typeId->getName() : "";
 
     if (form == ARRAY)
     {
-        Typespec *elmtType = pascalType->getArrayBaseType();
-        pascalTypeName = elmtType->getIdentifier()->getName();
-        return mapTypeName(pascalTypeName);
+        Typespec *elmtType = goType->getArrayBaseType();
+        goTypeName = elmtType->getIdentifier()->getName();
+        return mapTypeName(goTypeName);
     }
     else if (form == SUBRANGE)
     {
-        Typespec *baseType = pascalType->baseType();
-        pascalTypeName = baseType->getIdentifier()->getName();
-        return mapTypeName(pascalTypeName);
+        Typespec *baseType = goType->baseType();
+        goTypeName = baseType->getIdentifier()->getName();
+        return mapTypeName(goTypeName);
     }
     else if (form == ENUMERATION)
     {
-        return pascalType == Predefined::booleanType ? "bool" : pascalTypeName;
+        return goType == Predefined::booleanType ? "bool" : goTypeName;
     }
-    else if (form == RECORD) return pascalTypeName;
-    else                     return mapTypeName(pascalTypeName);
+    else if (form == RECORD) return goTypeName;
+    else                     return mapTypeName(goTypeName);
 }
 
-string Converter::mapTypeName(string pascalTypeName)
+string Converter::mapTypeName(string goTypeName)
 {
-    return typeNameTable.find(pascalTypeName) != typeNameTable.end()
-                            ? typeNameTable[pascalTypeName] : pascalTypeName;
+    return typeNameTable.find(goTypeName) != typeNameTable.end()
+                            ? typeNameTable[goTypeName] : goTypeName;
 }
 
-Object Converter::visitTypeIdentifier(PascalParser::TypeIdentifierContext *ctx)
+Object Converter::visitTypeIdentifier(goParser::TypeIdentifierContext *ctx)
 {
-    Typespec *pascalType = ctx->type;
-    string javaTypeName = typeName(pascalType);
+    Typespec *goType = ctx->type;
+    string javaTypeName = typeName(goType);
     code.emit(javaTypeName);
 
     return nullptr;
 }
 
 Object Converter::visitVariableIdentifierList(
-                             PascalParser::VariableIdentifierListContext *ctx)
+                             goParser::VariableIdentifierListContext *ctx)
 {
     string separator = " ";
 
-    for (PascalParser::VariableIdentifierContext *varCtx :
+    for (goParser::VariableIdentifierContext *varCtx :
                                                     ctx->variableIdentifier())
     {
         code.emit(separator);
@@ -270,12 +270,12 @@ Object Converter::visitVariableIdentifierList(
 }
 
 Object Converter::visitRoutineDefinition(
-                                    PascalParser::RoutineDefinitionContext *ctx)
+                                    goParser::RoutineDefinitionContext *ctx)
 {
-    PascalParser::FunctionHeadContext  *funcCtx  = ctx->functionHead();
-    PascalParser::ProcedureHeadContext *procCtx  = ctx->procedureHead();
-    PascalParser::RoutineIdentifierContext *idCtx = nullptr;
-    PascalParser::ParametersContext *parmsCtx = nullptr;
+    goParser::FunctionHeadContext  *funcCtx  = ctx->functionHead();
+    //goParser::ProcedureHeadContext *procCtx  = ctx->procedureHead();
+    goParser::RoutineIdentifierContext *idCtx = nullptr;
+    goParser::ParametersContext *parmsCtx = nullptr;
     bool functionDefinition = funcCtx != nullptr;
     string routineName;
 
@@ -289,12 +289,12 @@ Object Converter::visitRoutineDefinition(
         parmsCtx = funcCtx->parameters();
         visit(funcCtx->typeIdentifier());
     }
-    else
+    /*else
     {
         idCtx = procCtx->routineIdentifier();
         parmsCtx = procCtx->parameters();
         code.emit("void");
-    }
+    }*/
 
     routineName = idCtx->entry->getName();
     code.emit(" " + routineName);
@@ -330,7 +330,7 @@ Object Converter::visitRoutineDefinition(
     return nullptr;
 }
 
-Object Converter::visitParameters(PascalParser::ParametersContext *ctx)
+Object Converter::visitParameters(goParser::ParametersContext *ctx)
 {
     currentSeparator = "";
 
@@ -341,16 +341,16 @@ Object Converter::visitParameters(PascalParser::ParametersContext *ctx)
 }
 
 Object Converter::visitParameterDeclarations(
-                                PascalParser::ParameterDeclarationsContext *ctx)
+                                goParser::ParameterDeclarationsContext *ctx)
 {
     bool varParm = ctx->VAR() != nullptr;
-    PascalParser::ParameterIdentifierListContext *parmListCtx =
+    goParser::ParameterIdentifierListContext *parmListCtx =
                                                 ctx->parameterIdentifierList();
-    PascalParser::TypeIdentifierContext *typeCtx = ctx->typeIdentifier();
+    goParser::TypeIdentifierContext *typeCtx = ctx->typeIdentifier();
     Typespec *parmType = typeCtx->type;
 
     // Loop over the parameters.
-    for (PascalParser::ParameterIdentifierContext *parmIdCtx :
+    for (goParser::ParameterIdentifierContext *parmIdCtx :
                                             parmListCtx->parameterIdentifier())
     {
         code.emit(currentSeparator);
@@ -367,9 +367,9 @@ Object Converter::visitParameterDeclarations(
     return nullptr;
 }
 
-Object Converter::visitStatementList(PascalParser::StatementListContext *ctx)
+Object Converter::visitStatementList(goParser::StatementListContext *ctx)
 {
-    for (PascalParser::StatementContext *stmtCtx : ctx->statement())
+    for (goParser::StatementContext *stmtCtx : ctx->statement())
     {
         if (stmtCtx->emptyStatement() == nullptr)
         {
@@ -382,7 +382,7 @@ Object Converter::visitStatementList(PascalParser::StatementListContext *ctx)
 }
 
 Object Converter::visitCompoundStatement(
-                                    PascalParser::CompoundStatementContext *ctx)
+                                    goParser::CompoundStatementContext *ctx)
 {
     code.emit("{");
     code.indent();
@@ -394,7 +394,7 @@ Object Converter::visitCompoundStatement(
 }
 
 Object Converter::visitAssignmentStatement(
-                                PascalParser::AssignmentStatementContext *ctx)
+                                goParser::AssignmentStatementContext *ctx)
 {
     string lhs  = visit(ctx->lhs()->variable()).as<string>();
     string expr = visit(ctx->rhs()->expression()).as<string>();
@@ -404,10 +404,10 @@ Object Converter::visitAssignmentStatement(
     return nullptr;
 }
 
-Object Converter::visitIfStatement(PascalParser::IfStatementContext *ctx)
+Object Converter::visitIfStatement(goParser::IfStatementContext *ctx)
 {
-    PascalParser::TrueStatementContext  *trueCtx  = ctx->trueStatement();
-    PascalParser::FalseStatementContext *falseCtx = ctx->falseStatement();
+    goParser::TrueStatementContext  *trueCtx  = ctx->trueStatement();
+    goParser::FalseStatementContext *falseCtx = ctx->falseStatement();
 
     code.emit("if (");
     code.emit(visit(ctx->expression()).as<string>());
@@ -446,7 +446,7 @@ Object Converter::visitIfStatement(PascalParser::IfStatementContext *ctx)
     return nullptr;
 }
 
-Object Converter::visitCaseStatement(PascalParser::CaseStatementContext *ctx)
+Object Converter::visitCaseStatement(goParser::CaseStatementContext *ctx)
 {
     code.emit("switch (" + visit(ctx->expression()).as<string>() + ")");
     code.emitLine("{");
@@ -462,14 +462,14 @@ Object Converter::visitCaseStatement(PascalParser::CaseStatementContext *ctx)
     return nullptr;
 }
 
-Object Converter::visitCaseBranch(PascalParser::CaseBranchContext *ctx)
+Object Converter::visitCaseBranch(goParser::CaseBranchContext *ctx)
 {
-    PascalParser::CaseConstantListContext *listCtx = ctx->caseConstantList();
+    /*goParser::CaseConstantListContext *listCtx = ctx->caseConstantList();
 
     if (listCtx != nullptr)
     {
         // Loop over this branch's constants.
-        for (PascalParser::CaseConstantContext *constCtx :
+        for (goParser::CaseConstantContext *constCtx :
                                                         listCtx->caseConstant())
         {
             code.emitStart("case ");
@@ -488,12 +488,12 @@ Object Converter::visitCaseBranch(PascalParser::CaseBranchContext *ctx)
         visit(ctx->statement());
         code.emitLine("break;");
         code.dedent();
-    }
+    }*/
 
     return nullptr;
 }
 
-Object Converter::visitRepeatStatement(PascalParser::RepeatStatementContext *ctx)
+/*Object Converter::visitRepeatStatement(goParser::RepeatStatementContext *ctx)
 {
     bool needBraces = ctx->statementList()->statement().size() > 1;
 
@@ -511,9 +511,9 @@ Object Converter::visitRepeatStatement(PascalParser::RepeatStatementContext *ctx
     code.emitEnd("));");
 
     return nullptr;
-}
+}*/
 
-Object Converter::visitWhileStatement(PascalParser::WhileStatementContext *ctx)
+Object Converter::visitWhileStatement(goParser::WhileStatementContext *ctx)
 {
     bool compound = ctx->statement()->compoundStatement() != nullptr;
 
@@ -527,11 +527,17 @@ Object Converter::visitWhileStatement(PascalParser::WhileStatementContext *ctx)
     return nullptr;
 }
 
-Object Converter::visitForStatement(PascalParser::ForStatementContext *ctx)
+Object Converter::visitForStatement(goParser::ForStatementContext *ctx)
 {
-    PascalParser::VariableContext *controlCtx = ctx->variable();
+    bool like_while = ctx->whileStatement() == nullptr;
+    if(!like_while)
+    {
+    	visit(ctx->whileStatement());
+    	return nullptr;
+    }
+	/*goParser::VariableContext *controlCtx = ctx->variable();
     bool compound = ctx->statement()->compoundStatement() != nullptr;
-    bool to = ctx->TO() != nullptr;
+    //bool to = ctx->TO() != nullptr;
 
     string controlName = controlCtx->entry->getName();
     string exprText = visit(ctx->expression()[0]).as<string>();
@@ -552,14 +558,14 @@ Object Converter::visitForStatement(PascalParser::ForStatementContext *ctx)
     // Statement.
     if (compound) code.emitStart();
     visit(ctx->statement());
-
+	*/
     return nullptr;
 }
 
-Object Converter::visitProcedureCallStatement(
-                                PascalParser::ProcedureCallStatementContext *ctx)
+/*Object Converter::visitProcedureCallStatement(
+                                goParser::ProcedureCallStatementContext *ctx)
 {
-    PascalParser::ProcedureNameContext *procNameCtx = ctx->procedureName();
+    goParser::ProcedureNameContext *procNameCtx = ctx->procedureName();
     string procedureName = procNameCtx->entry->getName();
 
     code.emit(procedureName);
@@ -572,14 +578,14 @@ Object Converter::visitProcedureCallStatement(
 
     code.emitEnd(");");
     return nullptr;
-}
+}*/
 
-Object Converter::visitArgumentList(PascalParser::ArgumentListContext *ctx)
+Object Converter::visitArgumentList(goParser::ArgumentListContext *ctx)
 {
     string text = "";
     string separator = "";
 
-    for (PascalParser::ArgumentContext *argCtx : ctx->argument())
+    for (goParser::ArgumentContext *argCtx : ctx->argument())
     {
         text += separator;
         text += visit(argCtx->expression()).as<string>();
@@ -589,11 +595,11 @@ Object Converter::visitArgumentList(PascalParser::ArgumentListContext *ctx)
     return text;
 }
 
-Object Converter::visitExpression(PascalParser::ExpressionContext *ctx)
+Object Converter::visitExpression(goParser::ExpressionContext *ctx)
 {
-    PascalParser::SimpleExpressionContext *simpleCtx1 =
+    goParser::SimpleExpressionContext *simpleCtx1 =
                                                     ctx->simpleExpression()[0];
-    PascalParser::RelOpContext *relopCtx = ctx->relOp();
+    goParser::RelOpContext *relopCtx = ctx->relOp();
     string simpleText1 = visit(simpleCtx1);
     string text = simpleText1;
 
@@ -605,7 +611,7 @@ Object Converter::visitExpression(PascalParser::ExpressionContext *ctx)
         if      (op == "=")  op = "==";
         else if (op == "<>") op = "!=";
 
-        PascalParser::SimpleExpressionContext *simpleCtx2 =
+        goParser::SimpleExpressionContext *simpleCtx2 =
                                                     ctx->simpleExpression()[1];
         string simpleText2 = visit(simpleCtx2);
         text = simpleText1 + " " + op + " " + simpleText2;
@@ -615,7 +621,7 @@ Object Converter::visitExpression(PascalParser::ExpressionContext *ctx)
 }
 
 Object Converter::visitSimpleExpression(
-                                    PascalParser::SimpleExpressionContext *ctx)
+                                    goParser::SimpleExpressionContext *ctx)
 {
     int count = ctx->term().size();
     string text = "";
@@ -626,7 +632,7 @@ Object Converter::visitSimpleExpression(
     // Loop over the simple expressions.
     for (int i = 0; i < count; i++)
     {
-        PascalParser::TermContext *termCtx = ctx->term()[i];
+        goParser::TermContext *termCtx = ctx->term()[i];
         string termText = visit(termCtx);
 
         if (i < count-1)
@@ -648,14 +654,14 @@ Object Converter::visitSimpleExpression(
     return text;
 }
 
-Object Converter::visitTerm(PascalParser::TermContext *ctx)
+Object Converter::visitTerm(goParser::TermContext *ctx)
 {
     int count = ctx->factor().size();
     string text = "";
 
     for (int i = 0; i < count; i++)
     {
-        PascalParser::FactorContext *factorCtx = ctx->factor()[i];
+        goParser::FactorContext *factorCtx = ctx->factor()[i];
         text += visit(factorCtx).as<string>();
 
         if (i < count-1)
@@ -672,14 +678,14 @@ Object Converter::visitTerm(PascalParser::TermContext *ctx)
     return text;
 }
 
-Object Converter::visitVariableFactor(PascalParser::VariableFactorContext *ctx)
+Object Converter::visitVariableFactor(goParser::VariableFactorContext *ctx)
 {
     return visit(ctx->variable()).as<string>();
 }
 
-Object Converter::visitVariable(PascalParser::VariableContext *ctx)
+Object Converter::visitVariable(goParser::VariableContext *ctx)
 {
-    PascalParser::VariableIdentifierContext *idCtx = ctx->variableIdentifier();
+    goParser::VariableIdentifierContext *idCtx = ctx->variableIdentifier();
     SymtabEntry *variableId = idCtx->entry;
     string variableName = variableId->getName();
     Typespec *type = ctx->variableIdentifier()->type;
@@ -691,12 +697,12 @@ Object Converter::visitVariable(PascalParser::VariableContext *ctx)
     }
 
     // Loop over any subscript and field modifiers.
-    for (PascalParser::ModifierContext *modCtx : ctx->modifier())
+    for (goParser::ModifierContext *modCtx : ctx->modifier())
     {
         // Subscripts.
         if (modCtx->indexList() != nullptr)
         {
-            for (PascalParser::IndexContext *indexCtx :
+            for (goParser::IndexContext *indexCtx :
                                                 modCtx->indexList()->index())
             {
                 Typespec *indexType = type->getArrayIndexType();
@@ -707,7 +713,7 @@ Object Converter::visitVariable(PascalParser::VariableContext *ctx)
                     minIndex = indexType->getSubrangeMinValue();
                 }
 
-                PascalParser::ExpressionContext *exprCtx =
+                goParser::ExpressionContext *exprCtx =
                                                     indexCtx->expression();
                 string expr = visit(exprCtx).as<string>();
                 string subscript =
@@ -722,7 +728,7 @@ Object Converter::visitVariable(PascalParser::VariableContext *ctx)
         }
         else // Record field.
         {
-            PascalParser::FieldContext *fieldCtx = modCtx->field();
+            goParser::FieldContext *fieldCtx = modCtx->field();
             string fieldName = fieldCtx->entry->getName();
             variableName += "." + fieldName;
             type = fieldCtx->type;
@@ -732,27 +738,27 @@ Object Converter::visitVariable(PascalParser::VariableContext *ctx)
     return variableName;
 }
 
-Object Converter::visitNumberFactor(PascalParser::NumberFactorContext *ctx)
+Object Converter::visitNumberFactor(goParser::NumberFactorContext *ctx)
 {
     return ctx->getText();
 }
 
-Object Converter::visitCharacterFactor(PascalParser::CharacterFactorContext *ctx)
+Object Converter::visitCharacterFactor(goParser::CharacterFactorContext *ctx)
 {
     return ctx->getText();
 }
 
-Object Converter::visitStringFactor(PascalParser::StringFactorContext *ctx)
+Object Converter::visitStringFactor(goParser::StringFactorContext *ctx)
 {
-    string pascalString = ctx->stringConstant()->STRING()->getText();
-    return "string(\"" + convertString(pascalString, true) + "\")";
+    string goString = ctx->stringConstant()->STRING()->getText();
+    return "string(\"" + convertString(goString, true) + "\")";
 }
 
 Object Converter::visitFunctionCallFactor(
-                                PascalParser::FunctionCallFactorContext *ctx)
+                                goParser::FunctionCallFactorContext *ctx)
 {
-    PascalParser::FunctionCallContext *callCtx = ctx->functionCall();
-    PascalParser::FunctionNameContext *funcNameCtx = callCtx->functionName();
+    goParser::FunctionCallContext *callCtx = ctx->functionCall();
+    goParser::FunctionNameContext *funcNameCtx = callCtx->functionName();
     string functionName = funcNameCtx->entry->getName();
 
     string text = functionName + "(";
@@ -765,18 +771,18 @@ Object Converter::visitFunctionCallFactor(
     return text += ")";
 }
 
-Object Converter::visitNotFactor(PascalParser::NotFactorContext *ctx)
+Object Converter::visitNotFactor(goParser::NotFactorContext *ctx)
 {
     return "!" + visit(ctx->factor()).as<string>();
 }
 
 Object Converter::visitParenthesizedFactor(
-                                PascalParser::ParenthesizedFactorContext *ctx)
+                                goParser::ParenthesizedFactorContext *ctx)
 {
     return "(" + visit(ctx->expression()).as<string>() + ")";
 }
 
-Object Converter::visitWriteStatement(PascalParser::WriteStatementContext *ctx)
+Object Converter::visitWriteStatement(goParser::WriteStatementContext *ctx)
 {
     code.emit("printf(");
     code.mark();
@@ -798,7 +804,7 @@ Object Converter::visitWriteStatement(PascalParser::WriteStatementContext *ctx)
 }
 
 Object Converter::visitWritelnStatement(
-                                    PascalParser::WritelnStatementContext *ctx)
+                                    goParser::WritelnStatementContext *ctx)
 {
     if (ctx->writeArguments() != nullptr)
     {
@@ -827,12 +833,12 @@ Object Converter::visitWritelnStatement(
     return nullptr;
 }
 
-string Converter::createWriteFormat(PascalParser::WriteArgumentsContext *ctx)
+string Converter::createWriteFormat(goParser::WriteArgumentsContext *ctx)
 {
     string format = "";
 
     // Loop over the write arguments.
-    for (PascalParser::WriteArgumentContext *argCtx : ctx->writeArgument())
+    for (goParser::WriteArgumentContext *argCtx : ctx->writeArgument())
     {
         Typespec *type = argCtx->expression()->type;
         string argText = argCtx->getText();
@@ -848,14 +854,14 @@ string Converter::createWriteFormat(PascalParser::WriteArgumentsContext *ctx)
         {
             format += "%";
 
-            PascalParser::FieldWidthContext *fwCtx = argCtx->fieldWidth();
+            goParser::FieldWidthContext *fwCtx = argCtx->fieldWidth();
             if (fwCtx != nullptr)
             {
                 string sign = (   (fwCtx->sign() != nullptr)
                                && (fwCtx->sign()->getText() == "-")) ? "-" : "";
                 format += sign + fwCtx->integerConstant()->getText();
 
-                PascalParser::DecimalPlacesContext *dpCtx = fwCtx->decimalPlaces();
+                goParser::DecimalPlacesContext *dpCtx = fwCtx->decimalPlaces();
                 if (dpCtx != nullptr)
                 {
                     format += "." + dpCtx->integerConstant()->getText();
@@ -874,13 +880,13 @@ string Converter::createWriteFormat(PascalParser::WriteArgumentsContext *ctx)
     return format;
 }
 
-string Converter::createWriteArguments(PascalParser::WriteArgumentsContext *ctx)
+string Converter::createWriteArguments(goParser::WriteArgumentsContext *ctx)
 {
     string arguments = "";
     string separator = "";
 
     // Loop over the write arguments.
-    for (PascalParser::WriteArgumentContext *argCtx : ctx->writeArgument())
+    for (goParser::WriteArgumentContext *argCtx : ctx->writeArgument())
     {
         string argText = argCtx->getText();
 
@@ -905,7 +911,7 @@ string Converter::createWriteArguments(PascalParser::WriteArgumentsContext *ctx)
     return arguments;
 }
 
-Object Converter::visitReadStatement(PascalParser::ReadStatementContext *ctx)
+/*Object Converter::visitReadStatement(goParser::ReadStatementContext *ctx)
 {
     if (ctx->readArguments()->variable().size() == 1)
     {
@@ -923,9 +929,9 @@ Object Converter::visitReadStatement(PascalParser::ReadStatementContext *ctx)
         code.emitLine("}");
     }
     return nullptr;
-}
+}*/
 
-Object Converter::visitReadlnStatement(PascalParser::ReadlnStatementContext *ctx)
+/*Object Converter::visitReadlnStatement(goParser::ReadlnStatementContext *ctx)
 {
     code.emit("{");
     code.indent();
@@ -938,15 +944,15 @@ Object Converter::visitReadlnStatement(PascalParser::ReadlnStatementContext *ctx
     code.emitLine("}");
 
     return nullptr;
-}
+}*/
 
-Object Converter::visitReadArguments(PascalParser::ReadArgumentsContext *ctx)
+/*Object Converter::visitReadArguments(goParser::ReadArgumentsContext *ctx)
 {
     int size = ctx->variable().size();
 
     for (int i = 0; i < size; i++)
     {
-        PascalParser::VariableContext *varCtx = ctx->variable()[i];
+        goParser::VariableContext *varCtx = ctx->variable()[i];
         string varName = varCtx->getText();
         Typespec *type = varCtx->type;
 
@@ -967,6 +973,6 @@ Object Converter::visitReadArguments(PascalParser::ReadArgumentsContext *ctx)
     }
 
     return nullptr;
-}
+}*/
 
 }} // namespace backend::converter

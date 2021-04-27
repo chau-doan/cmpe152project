@@ -26,8 +26,8 @@ public:
     TYPE = 27, ARRAY = 28, OF = 29, RECORD = 30, VAR = 31, BEGIN = 32, END = 33, 
     DIV = 34, MOD = 35, AND = 36, OR = 37, NOT = 38, IF = 39, THEN = 40, 
     ELSE = 41, CASE = 42, FOR = 43, PRINT = 44, PRINTLN = 45, FUNC = 46, 
-    SWITCH = 47, DEFAULT = 48, IDENTIFIER = 49, INT = 50, DOUBLE = 51, NEWLINE = 52, 
-    WS = 53, QUOTE = 54, CHAR = 55, STRING = 56, COMMENT = 57
+    SWITCH = 47, DEFAULT = 48, FMT = 49, IDENTIFIER = 50, INT = 51, DOUBLE = 52, 
+    NEWLINE = 53, WS = 54, QUOTE = 55, CHAR = 56, STRING = 57, COMMENT = 58
   };
 
   enum {
@@ -37,24 +37,26 @@ public:
     RuleSign = 10, RuleTypesPart = 11, RuleTypeDefinitionsList = 12, RuleTypeDefinition = 13, 
     RuleTypeIdentifier = 14, RuleTypeSpecification = 15, RuleSimpleType = 16, 
     RuleEnumerationType = 17, RuleEnumerationConstant = 18, RuleSubrangeType = 19, 
-    RuleVariablesPart = 20, RuleVariableDeclarationsList = 21, RuleVariableDeclarations = 22, 
-    RuleVariableIdentifierList = 23, RuleVariableIdentifier = 24, RuleRoutinesPart = 25, 
-    RuleRoutineDefinition = 26, RuleFunctionHead = 27, RuleRoutineIdentifier = 28, 
-    RuleParameters = 29, RuleParameterDeclarationsList = 30, RuleParameterDeclarations = 31, 
-    RuleParameterIdentifierList = 32, RuleParameterIdentifier = 33, RuleStatement = 34, 
-    RuleCompoundStatement = 35, RuleEmptyStatement = 36, RuleStatementList = 37, 
-    RuleAssignmentStatement = 38, RuleLhs = 39, RuleRhs = 40, RuleIfStatement = 41, 
-    RuleTrueStatement = 42, RuleFalseStatement = 43, RuleCaseStatement = 44, 
-    RuleCaseBranchList = 45, RuleCaseBranch = 46, RuleCaseConstant = 47, 
-    RuleForStatement = 48, RuleProcedureCallStatement = 49, RuleProcedureName = 50, 
-    RuleArgumentList = 51, RuleArgument = 52, RuleWriteStatement = 53, RuleWritelnStatement = 54, 
-    RuleWriteArguments = 55, RuleWriteArgument = 56, RuleFieldWidth = 57, 
-    RuleDecimalPlaces = 58, RuleExpression = 59, RuleSimpleExpression = 60, 
-    RuleTerm = 61, RuleFactor = 62, RuleVariable = 63, RuleModifier = 64, 
-    RuleIndexList = 65, RuleIndex = 66, RuleField = 67, RuleFunctionCall = 68, 
-    RuleFunctionName = 69, RuleNumber = 70, RuleUnsignedNumber = 71, RuleIntegerConstant = 72, 
-    RuleRealConstant = 73, RuleCharacterConstant = 74, RuleStringConstant = 75, 
-    RuleRelOp = 76, RuleAddOp = 77, RuleMulOp = 78
+    RuleArrayType = 20, RuleArrayDimensionList = 21, RuleRecordType = 22, 
+    RuleRecordFields = 23, RuleVariablesPart = 24, RuleVariableDeclarationsList = 25, 
+    RuleVariableDeclarations = 26, RuleVariableIdentifierList = 27, RuleVariableIdentifier = 28, 
+    RuleRoutinesPart = 29, RuleRoutineDefinition = 30, RuleFunctionHead = 31, 
+    RuleRoutineIdentifier = 32, RuleParameters = 33, RuleParameterDeclarationsList = 34, 
+    RuleParameterDeclarations = 35, RuleParameterIdentifierList = 36, RuleParameterIdentifier = 37, 
+    RuleStatement = 38, RuleCompoundStatement = 39, RuleEmptyStatement = 40, 
+    RuleStatementList = 41, RuleAssignmentStatement = 42, RuleLhs = 43, 
+    RuleRhs = 44, RuleIfStatement = 45, RuleTrueStatement = 46, RuleFalseStatement = 47, 
+    RuleCaseStatement = 48, RuleCaseBranchList = 49, RuleCaseBranch = 50, 
+    RuleCaseConstant = 51, RuleForStatement = 52, RuleWhileStatement = 53, 
+    RuleProcedureCallStatement = 54, RuleProcedureName = 55, RuleArgumentList = 56, 
+    RuleArgument = 57, RuleWriteStatement = 58, RuleWritelnStatement = 59, 
+    RuleWriteArguments = 60, RuleWriteArgument = 61, RuleFieldWidth = 62, 
+    RuleDecimalPlaces = 63, RuleExpression = 64, RuleSimpleExpression = 65, 
+    RuleTerm = 66, RuleFactor = 67, RuleVariable = 68, RuleModifier = 69, 
+    RuleIndexList = 70, RuleIndex = 71, RuleField = 72, RuleFunctionCall = 73, 
+    RuleFunctionName = 74, RuleNumber = 75, RuleUnsignedNumber = 76, RuleIntegerConstant = 77, 
+    RuleRealConstant = 78, RuleCharacterConstant = 79, RuleStringConstant = 80, 
+    RuleRelOp = 81, RuleAddOp = 82, RuleMulOp = 83
   };
 
   goParser(antlr4::TokenStream *input);
@@ -87,6 +89,10 @@ public:
   class EnumerationTypeContext;
   class EnumerationConstantContext;
   class SubrangeTypeContext;
+  class ArrayTypeContext;
+  class ArrayDimensionListContext;
+  class RecordTypeContext;
+  class RecordFieldsContext;
   class VariablesPartContext;
   class VariableDeclarationsListContext;
   class VariableDeclarationsContext;
@@ -116,6 +122,7 @@ public:
   class CaseBranchContext;
   class CaseConstantContext;
   class ForStatementContext;
+  class WhileStatementContext;
   class ProcedureCallStatementContext;
   class ProcedureNameContext;
   class ArgumentListContext;
@@ -387,6 +394,24 @@ public:
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
+  class  ArrayTypespecContext : public TypeSpecificationContext {
+  public:
+    ArrayTypespecContext(TypeSpecificationContext *ctx);
+
+    ArrayTypeContext *arrayType();
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  RecordTypespecContext : public TypeSpecificationContext {
+  public:
+    RecordTypespecContext(TypeSpecificationContext *ctx);
+
+    RecordTypeContext *recordType();
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   TypeSpecificationContext* typeSpecification();
 
   class  SimpleTypeContext : public antlr4::ParserRuleContext {
@@ -472,6 +497,65 @@ public:
   };
 
   SubrangeTypeContext* subrangeType();
+
+  class  ArrayTypeContext : public antlr4::ParserRuleContext {
+  public:
+    ArrayTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *ARRAY();
+    ArrayDimensionListContext *arrayDimensionList();
+    antlr4::tree::TerminalNode *OF();
+    TypeSpecificationContext *typeSpecification();
+
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  ArrayTypeContext* arrayType();
+
+  class  ArrayDimensionListContext : public antlr4::ParserRuleContext {
+  public:
+    ArrayDimensionListContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    std::vector<SimpleTypeContext *> simpleType();
+    SimpleTypeContext* simpleType(size_t i);
+
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  ArrayDimensionListContext* arrayDimensionList();
+
+  class  RecordTypeContext : public antlr4::ParserRuleContext {
+  public:
+    SymtabEntry * entry = nullptr;
+    RecordTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *RECORD();
+    RecordFieldsContext *recordFields();
+    antlr4::tree::TerminalNode *END();
+
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  RecordTypeContext* recordType();
+
+  class  RecordFieldsContext : public antlr4::ParserRuleContext {
+  public:
+    RecordFieldsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    VariableDeclarationsListContext *variableDeclarationsList();
+
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  RecordFieldsContext* recordFields();
 
   class  VariablesPartContext : public antlr4::ParserRuleContext {
   public:
@@ -821,7 +905,7 @@ public:
 
   class  CaseStatementContext : public antlr4::ParserRuleContext {
   public:
-    map<int, PascalParser::StatementContext*> * jumpTable = nullptr;
+    map<int, goParser::StatementContext*> * jumpTable = nullptr;
     CaseStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *SWITCH();
@@ -886,11 +970,12 @@ public:
     ForStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *FOR();
-    StatementContext *statement();
+    WhileStatementContext *whileStatement();
+    VariableContext *variable();
     std::vector<ExpressionContext *> expression();
     ExpressionContext* expression(size_t i);
-    VariableContext *variable();
     AssignmentStatementContext *assignmentStatement();
+    StatementContext *statement();
 
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -898,6 +983,20 @@ public:
   };
 
   ForStatementContext* forStatement();
+
+  class  WhileStatementContext : public antlr4::ParserRuleContext {
+  public:
+    WhileStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    ExpressionContext *expression();
+    StatementContext *statement();
+
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  WhileStatementContext* whileStatement();
 
   class  ProcedureCallStatementContext : public antlr4::ParserRuleContext {
   public:
@@ -958,6 +1057,7 @@ public:
   public:
     WriteStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *FMT();
     antlr4::tree::TerminalNode *PRINT();
     WriteArgumentsContext *writeArguments();
 
@@ -972,6 +1072,7 @@ public:
   public:
     WritelnStatementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *FMT();
     antlr4::tree::TerminalNode *PRINTLN();
     WriteArgumentsContext *writeArguments();
 

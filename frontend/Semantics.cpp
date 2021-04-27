@@ -24,7 +24,7 @@ using namespace intermediate::symtab;
 using namespace intermediate::type;
 using namespace intermediate::util;
 
-Object Semantics::visitProgram(PascalParser::ProgramContext *ctx)
+Object Semantics::visitProgram(goParser::ProgramContext *ctx)
 {
     visit(ctx->programHeader());
     visit(ctx->block()->declarations());
@@ -37,9 +37,9 @@ Object Semantics::visitProgram(PascalParser::ProgramContext *ctx)
     return nullptr;
 }
 
-Object Semantics::visitProgramHeader(PascalParser::ProgramHeaderContext *ctx)
+Object Semantics::visitProgramHeader(goParser::ProgramHeaderContext *ctx)
 {
-    PascalParser::ProgramIdentifierContext *idCtx = ctx->programIdentifier();
+    goParser::ProgramIdentifierContext *idCtx = ctx->programIdentifier();
     string programName = idCtx->IDENTIFIER()->getText();  // don't shift case
 
     programId = symtabStack->enterLocal(programName, PROGRAM);
@@ -53,15 +53,15 @@ Object Semantics::visitProgramHeader(PascalParser::ProgramHeaderContext *ctx)
 }
 
 Object Semantics::visitConstantDefinition(
-                                PascalParser::ConstantDefinitionContext *ctx)
+                                goParser::ConstantDefinitionContext *ctx)
 {
-    PascalParser::ConstantIdentifierContext *idCtx = ctx->constantIdentifier();
+    goParser::ConstantIdentifierContext *idCtx = ctx->constantIdentifier();
     string constantName = toLowerCase(idCtx->IDENTIFIER()->getText());
     SymtabEntry *constantId = symtabStack->lookupLocal(constantName);
 
     if (constantId == nullptr)
     {
-        PascalParser::ConstantContext *constCtx = ctx->constant();
+        goParser::ConstantContext *constCtx = ctx->constant();
         Object constValue = visit(constCtx);
 
         constantId = symtabStack->enterLocal(constantName, CONSTANT);
@@ -83,7 +83,7 @@ Object Semantics::visitConstantDefinition(
     return nullptr;
 }
 
-Object Semantics::visitConstant(PascalParser::ConstantContext *ctx)
+Object Semantics::visitConstant(goParser::ConstantContext *ctx)
 {
     if (ctx->IDENTIFIER() != nullptr)
     {
@@ -117,8 +117,8 @@ Object Semantics::visitConstant(PascalParser::ConstantContext *ctx)
     }
     else if (ctx->stringConstant() != nullptr)
     {
-        string pascalString = ctx->stringConstant()->STRING()->getText();
-        string unquoted = pascalString.substr(1, pascalString.length()-2);
+        string goString = ctx->stringConstant()->STRING()->getText();
+        string unquoted = goString.substr(1, goString.length()-2);
 
         size_t pos = 0;
         while ((pos = unquoted.find("''", pos)) != string::npos)
@@ -137,7 +137,7 @@ Object Semantics::visitConstant(PascalParser::ConstantContext *ctx)
     }
     else  // number
     {
-        PascalParser::UnsignedNumberContext *unsignedCtx = ctx->unsignedNumber();
+        goParser::UnsignedNumberContext *unsignedCtx = ctx->unsignedNumber();
 
         if (unsignedCtx->integerConstant() != nullptr)
         {
@@ -154,18 +154,18 @@ Object Semantics::visitConstant(PascalParser::ConstantContext *ctx)
     return ctx->value;
 }
 
-Object Semantics::visitTypeDefinition(PascalParser::TypeDefinitionContext *ctx)
+Object Semantics::visitTypeDefinition(goParser::TypeDefinitionContext *ctx)
 {
-    PascalParser::TypeIdentifierContext *idCtx = ctx->typeIdentifier();
+    goParser::TypeIdentifierContext *idCtx = ctx->typeIdentifier();
     string typeName = toLowerCase(idCtx->IDENTIFIER()->getText());
     SymtabEntry *typeId = symtabStack->lookupLocal(typeName);
 
-    PascalParser::TypeSpecificationContext *typespecCtx =
+    goParser::TypeSpecificationContext *typespecCtx =
                                                     ctx->typeSpecification();
 
     // If it's a record type, create a named record type.
-    PascalParser::RecordTypespecContext *recordTypespecCtx =
-                dynamic_cast<PascalParser::RecordTypespecContext *>(typespecCtx);
+    goParser::RecordTypespecContext *recordTypespecCtx =
+                dynamic_cast<goParser::RecordTypespecContext *>(typespecCtx);
     if (recordTypespecCtx != nullptr)
     {
         typeId = createRecordType(recordTypespecCtx, typeName);
@@ -174,7 +174,7 @@ Object Semantics::visitTypeDefinition(PascalParser::TypeDefinitionContext *ctx)
     // Enter the type name of any other type into the symbol table.
     else if (typeId == nullptr)
     {
-        PascalParser::TypeSpecificationContext *typeCtx =
+        goParser::TypeSpecificationContext *typeCtx =
                                                     ctx->typeSpecification();
         visit(typeCtx);
 
@@ -194,7 +194,7 @@ Object Semantics::visitTypeDefinition(PascalParser::TypeDefinitionContext *ctx)
     return nullptr;
 }
 
-Object Semantics::visitRecordTypespec(PascalParser::RecordTypespecContext *ctx)
+Object Semantics::visitRecordTypespec(goParser::RecordTypespecContext *ctx)
 {
     // Create an unnamed record type.
     string recordTypeName = Symtab::generateUnnamedName();
@@ -204,10 +204,10 @@ Object Semantics::visitRecordTypespec(PascalParser::RecordTypespecContext *ctx)
 }
 
 SymtabEntry *Semantics::createRecordType(
-                    PascalParser::RecordTypespecContext *recordTypeSpecCtx,
+                    goParser::RecordTypespecContext *recordTypeSpecCtx,
                     string recordTypeName)
 {
-    PascalParser::RecordTypeContext *recordTypeCtx =
+    goParser::RecordTypeContext *recordTypeCtx =
                                             recordTypeSpecCtx->recordType();
     Typespec *recordType = new Typespec(RECORD);
 
@@ -247,7 +247,7 @@ string Semantics::createRecordTypePath(Typespec *recordType)
 }
 
 Symtab *Semantics::createRecordSymtab(
-                PascalParser::RecordFieldsContext *ctx, SymtabEntry *ownerId)
+                goParser::RecordFieldsContext *ctx, SymtabEntry *ownerId)
 {
     Symtab *recordSymtab = symtabStack->push();
 
@@ -259,7 +259,7 @@ Symtab *Semantics::createRecordSymtab(
     return recordSymtab;
 }
 
-Object Semantics::visitSimpleTypespec(PascalParser::SimpleTypespecContext *ctx)
+Object Semantics::visitSimpleTypespec(goParser::SimpleTypespecContext *ctx)
 {
     visit(ctx->simpleType());
     ctx->type = ctx->simpleType()->type;
@@ -268,7 +268,7 @@ Object Semantics::visitSimpleTypespec(PascalParser::SimpleTypespecContext *ctx)
 }
 
 Object Semantics::visitTypeIdentifierTypespec(
-                            PascalParser::TypeIdentifierTypespecContext *ctx)
+                            goParser::TypeIdentifierTypespecContext *ctx)
 {
     visit(ctx->typeIdentifier());
     ctx->type = ctx->typeIdentifier()->type;
@@ -276,7 +276,7 @@ Object Semantics::visitTypeIdentifierTypespec(
     return nullptr;
 }
 
-Object Semantics::visitTypeIdentifier(PascalParser::TypeIdentifierContext *ctx)
+Object Semantics::visitTypeIdentifier(goParser::TypeIdentifierContext *ctx)
 {
     string typeName = toLowerCase(ctx->IDENTIFIER()->getText());
     SymtabEntry *typeId = symtabStack->lookup(typeName);
@@ -306,17 +306,17 @@ Object Semantics::visitTypeIdentifier(PascalParser::TypeIdentifierContext *ctx)
 }
 
 Object Semantics::visitEnumerationTypespec(
-                                PascalParser::EnumerationTypespecContext *ctx)
+                                goParser::EnumerationTypespecContext *ctx)
 {
     Typespec *enumType = new Typespec(ENUMERATION);
     vector<SymtabEntry *> *constants = new vector<SymtabEntry *>();
     int value = -1;
 
     // Loop over the enumeration constants.
-    for (PascalParser::EnumerationConstantContext *constCtx :
+    for (goParser::EnumerationConstantContext *constCtx :
                                 ctx->enumerationType()->enumerationConstant())
     {
-        PascalParser::ConstantIdentifierContext *constIdCtx =
+        goParser::ConstantIdentifierContext *constIdCtx =
                                                 constCtx->constantIdentifier();
         string constantName = toLowerCase(constIdCtx->IDENTIFIER()->getText());
         SymtabEntry *constantId = symtabStack->lookupLocal(constantName);
@@ -348,12 +348,12 @@ Object Semantics::visitEnumerationTypespec(
 }
 
 Object Semantics::visitSubrangeTypespec(
-                                    PascalParser::SubrangeTypespecContext *ctx)
+                                    goParser::SubrangeTypespecContext *ctx)
 {
     Typespec *type = new Typespec(SUBRANGE);
-    PascalParser::SubrangeTypeContext *subCtx = ctx->subrangeType();
-    PascalParser::ConstantContext *minCtx = subCtx->constant()[0];
-    PascalParser::ConstantContext *maxCtx = subCtx->constant()[1];
+    goParser::SubrangeTypeContext *subCtx = ctx->subrangeType();
+    goParser::ConstantContext *minCtx = subCtx->constant()[0];
+    goParser::ConstantContext *maxCtx = subCtx->constant()[1];
 
     Object minObj = visit(minCtx);
     Object maxObj = visit(maxCtx);
@@ -405,11 +405,11 @@ Object Semantics::visitSubrangeTypespec(
     return nullptr;
 }
 
-Object Semantics::visitArrayTypespec(PascalParser::ArrayTypespecContext *ctx)
+Object Semantics::visitArrayTypespec(goParser::ArrayTypespecContext *ctx)
 {
     Typespec *arrayType = new Typespec(ARRAY);
-    PascalParser::ArrayTypeContext *arrayCtx = ctx->arrayType();
-    PascalParser::ArrayDimensionListContext *listCtx =
+    goParser::ArrayTypeContext *arrayCtx = ctx->arrayType();
+    goParser::ArrayDimensionListContext *listCtx =
                                                 arrayCtx->arrayDimensionList();
 
     ctx->type = arrayType;
@@ -418,7 +418,7 @@ Object Semantics::visitArrayTypespec(PascalParser::ArrayTypespecContext *ctx)
     int count = listCtx->simpleType().size();
     for (int i = 0; i < count; i++)
     {
-        PascalParser::SimpleTypeContext *simpleCtx = listCtx->simpleType()[i];
+        goParser::SimpleTypeContext *simpleCtx = listCtx->simpleType()[i];
         visit(simpleCtx);
         arrayType->setArrayIndexType(simpleCtx->type);
         arrayType->setArrayElementCount(typeCount(simpleCtx->type));
@@ -458,16 +458,16 @@ int Semantics::typeCount(Typespec *type)
 }
 
 Object Semantics::visitVariableDeclarations(
-                                PascalParser::VariableDeclarationsContext *ctx)
+                                goParser::VariableDeclarationsContext *ctx)
 {
-    PascalParser::TypeSpecificationContext *typeCtx = ctx->typeSpecification();
+    goParser::TypeSpecificationContext *typeCtx = ctx->typeSpecification();
     visit(typeCtx);
 
-    PascalParser::VariableIdentifierListContext *listCtx =
+    goParser::VariableIdentifierListContext *listCtx =
                                                 ctx->variableIdentifierList();
 
     // Loop over the variables being declared.
-    for (PascalParser::VariableIdentifierContext *idCtx :
+    for (goParser::VariableIdentifierContext *idCtx :
                                                 listCtx->variableIdentifier())
     {
         int lineNumber = idCtx->getStart()->getLine();
@@ -500,12 +500,12 @@ Object Semantics::visitVariableDeclarations(
 }
 
 Object Semantics::visitRoutineDefinition(
-                                    PascalParser::RoutineDefinitionContext *ctx)
+                                    goParser::RoutineDefinitionContext *ctx)
 {
-    PascalParser::FunctionHeadContext  *funcCtx = ctx->functionHead();
-    PascalParser::ProcedureHeadContext *procCtx = ctx->procedureHead();
-    PascalParser::RoutineIdentifierContext *idCtx = nullptr;
-    PascalParser::ParametersContext *parameters = nullptr;
+    goParser::FunctionHeadContext  *funcCtx = ctx->functionHead();
+    //goParser::ProcedureHeadContext *procCtx = ctx->procedureHead();
+    goParser::RoutineIdentifierContext *idCtx = nullptr;
+    goParser::ParametersContext *parameters = nullptr;
     bool functionDefinition = funcCtx != nullptr;
     Typespec *returnType = nullptr;
     string routineName;
@@ -514,11 +514,6 @@ Object Semantics::visitRoutineDefinition(
     {
         idCtx = funcCtx->routineIdentifier();
         parameters = funcCtx->parameters();
-    }
-    else
-    {
-        idCtx = procCtx->routineIdentifier();
-        parameters = procCtx->parameters();
     }
 
     routineName = toLowerCase(idCtx->IDENTIFIER()->getText());
@@ -561,7 +556,7 @@ Object Semantics::visitRoutineDefinition(
 
     if (functionDefinition)
     {
-        PascalParser::TypeIdentifierContext *typeIdCtx =
+        goParser::TypeIdentifierContext *typeIdCtx =
                                                 funcCtx->typeIdentifier();
         visit(typeIdCtx);
         returnType = typeIdCtx->type;
@@ -599,12 +594,12 @@ Object Semantics::visitRoutineDefinition(
 }
 
 Object Semantics::visitParameterDeclarationsList(
-                            PascalParser::ParameterDeclarationsListContext *ctx)
+                            goParser::ParameterDeclarationsListContext *ctx)
 {
     vector<SymtabEntry *> *parameterList = new vector<SymtabEntry *>();
 
     // Loop over the parameter declarations.
-    for (PascalParser::ParameterDeclarationsContext *dclCtx :
+    for (goParser::ParameterDeclarationsContext *dclCtx :
                                                 ctx->parameterDeclarations())
     {
         vector<SymtabEntry *> parameterSublist =
@@ -616,10 +611,10 @@ Object Semantics::visitParameterDeclarationsList(
 }
 
 Object Semantics::visitParameterDeclarations(
-                                PascalParser::ParameterDeclarationsContext *ctx)
+                                goParser::ParameterDeclarationsContext *ctx)
 {
     Kind kind = ctx->VAR() != nullptr ? REFERENCE_PARAMETER : VALUE_PARAMETER;
-    PascalParser::TypeIdentifierContext *typeCtx = ctx->typeIdentifier();
+    goParser::TypeIdentifierContext *typeCtx = ctx->typeIdentifier();
 
     visit(typeCtx);
     Typespec *parmType = typeCtx->type;
@@ -627,9 +622,9 @@ Object Semantics::visitParameterDeclarations(
     vector<SymtabEntry *> parameterSublist;
 
     // Loop over the parameter identifiers.
-    PascalParser::ParameterIdentifierListContext *listCtx =
+    goParser::ParameterIdentifierListContext *listCtx =
                                                 ctx->parameterIdentifierList();
-    for (PascalParser::ParameterIdentifierContext *idCtx :
+    for (goParser::ParameterIdentifierContext *idCtx :
                                                 listCtx->parameterIdentifier())
     {
         int lineNumber = idCtx->getStart()->getLine();
@@ -657,10 +652,10 @@ Object Semantics::visitParameterDeclarations(
 }
 
 Object Semantics::visitAssignmentStatement(
-                                PascalParser::AssignmentStatementContext *ctx)
+                                goParser::AssignmentStatementContext *ctx)
 {
-    PascalParser::LhsContext *lhsCtx = ctx->lhs();
-    PascalParser::RhsContext *rhsCtx = ctx->rhs();
+    goParser::LhsContext *lhsCtx = ctx->lhs();
+    goParser::RhsContext *rhsCtx = ctx->rhs();
 
     visitChildren(ctx);
 
@@ -675,20 +670,20 @@ Object Semantics::visitAssignmentStatement(
     return nullptr;
 }
 
-Object Semantics::visitLhs(PascalParser::LhsContext *ctx)
+Object Semantics::visitLhs(goParser::LhsContext *ctx)
 {
-    PascalParser::VariableContext *varCtx = ctx->variable();
+    goParser::VariableContext *varCtx = ctx->variable();
     visit(varCtx);
     ctx->type = varCtx->type;
 
     return nullptr;
 }
 
-Object Semantics::visitIfStatement(PascalParser::IfStatementContext *ctx)
+Object Semantics::visitIfStatement(goParser::IfStatementContext *ctx)
 {
-    PascalParser::ExpressionContext     *exprCtx  = ctx->expression();
-    PascalParser::TrueStatementContext  *trueCtx  = ctx->trueStatement();
-    PascalParser::FalseStatementContext *falseCtx = ctx->falseStatement();
+    goParser::ExpressionContext     *exprCtx  = ctx->expression();
+    goParser::TrueStatementContext  *trueCtx  = ctx->trueStatement();
+    goParser::FalseStatementContext *falseCtx = ctx->falseStatement();
 
     visit(exprCtx);
     Typespec *expr_type = exprCtx->type;
@@ -704,9 +699,9 @@ Object Semantics::visitIfStatement(PascalParser::IfStatementContext *ctx)
     return nullptr;
 }
 
-Object Semantics::visitCaseStatement(PascalParser::CaseStatementContext *ctx)
+Object Semantics::visitCaseStatement(goParser::CaseStatementContext *ctx)
 {
-    PascalParser::ExpressionContext *exprCtx = ctx->expression();
+    goParser::ExpressionContext *exprCtx = ctx->expression();
     visit(exprCtx);
     Typespec *exprType = exprCtx->type;
     Form exprTypeForm = exprType->getForm();
@@ -722,53 +717,47 @@ Object Semantics::visitCaseStatement(PascalParser::CaseStatementContext *ctx)
     }
 
     set<int> constants;
-    PascalParser::CaseBranchListContext *branchListCtx = ctx->caseBranchList();
+    goParser::CaseBranchListContext *branchListCtx = ctx->caseBranchList();
 
     // Loop over the CASE branches.
-    for (PascalParser::CaseBranchContext *branchCtx :
+    for (goParser::CaseBranchContext *branchCtx :
                                                 branchListCtx->caseBranch())
     {
-        PascalParser::CaseConstantListContext *constListCtx =
-                                                branchCtx->caseConstantList();
-        PascalParser::StatementContext *stmtCtx = branchCtx->statement();
+        goParser::CaseConstantContext *caseConstCtx = branchCtx->caseConstant();
+        goParser::StatementContext *stmtCtx = branchCtx->statement();
 
-        if (constListCtx != nullptr)
-        {
-            // Loop over the CASE constants in each branch.
-            for (PascalParser::CaseConstantContext *caseConstCtx :
-                                                constListCtx->caseConstant())
-            {
-                PascalParser::ConstantContext *constCtx =
-                                                    caseConstCtx->constant();
-                Object constValue = visit(constCtx);
+        // Loop over the CASE constants in each branch.
 
-                caseConstCtx->type  = constCtx->type;
-                caseConstCtx->value = 0;
+		goParser::ConstantContext *constCtx =
+											caseConstCtx->constant();
+		Object constValue = visit(constCtx);
 
-                if (constCtx->type != exprType)
-                {
-                    error.flag(TYPE_MISMATCH, constCtx);
-                }
-                else if (   (constCtx->type == Predefined::integerType)
-                         || (constCtx->type->getForm() == ENUMERATION))
-                {
-                    caseConstCtx->value = constValue.as<int>();
-                }
-                else if (constCtx->type == Predefined::charType)
-                {
-                    caseConstCtx->value = constValue.as<char>();
-                }
+		caseConstCtx->type  = constCtx->type;
+		caseConstCtx->value = 0;
 
-                if (constants.find(caseConstCtx->value) != constants.end())
-                {
-                    error.flag(DUPLICATE_CASE_CONSTANT, constCtx);
-                }
-                else
-                {
-                    constants.insert(caseConstCtx->value);
-                }
-            }
-        }
+		if (constCtx->type != exprType)
+		{
+			error.flag(TYPE_MISMATCH, constCtx);
+		}
+		else if (   (constCtx->type == Predefined::integerType)
+				 || (constCtx->type->getForm() == ENUMERATION))
+		{
+			caseConstCtx->value = constValue.as<int>();
+		}
+		else if (constCtx->type == Predefined::charType)
+		{
+			caseConstCtx->value = constValue.as<char>();
+		}
+
+		if (constants.find(caseConstCtx->value) != constants.end())
+		{
+			error.flag(DUPLICATE_CASE_CONSTANT, constCtx);
+		}
+		else
+		{
+			constants.insert(caseConstCtx->value);
+		}
+
 
         if (stmtCtx != nullptr) visit(stmtCtx);
     }
@@ -776,10 +765,10 @@ Object Semantics::visitCaseStatement(PascalParser::CaseStatementContext *ctx)
     return nullptr;
 }
 
-Object Semantics::visitRepeatStatement(
-                                    PascalParser::RepeatStatementContext *ctx)
+/*Object Semantics::visitRepeatStatement(
+                                    goParser::RepeatStatementContext *ctx)
 {
-    PascalParser::ExpressionContext *exprCtx = ctx->expression();
+    goParser::ExpressionContext *exprCtx = ctx->expression();
     visit(exprCtx);
     Typespec *exprType = exprCtx->type;
 
@@ -790,11 +779,11 @@ Object Semantics::visitRepeatStatement(
 
     visit(ctx->statementList());
     return nullptr;
-}
+}*/
 
-Object Semantics::visitWhileStatement(PascalParser::WhileStatementContext *ctx)
+Object Semantics::visitWhileStatement(goParser::WhileStatementContext *ctx)
 {
-    PascalParser::ExpressionContext *exprCtx = ctx->expression();
+    goParser::ExpressionContext *exprCtx = ctx->expression();
     visit(exprCtx);
     Typespec *exprType = exprCtx->type;
 
@@ -807,9 +796,15 @@ Object Semantics::visitWhileStatement(PascalParser::WhileStatementContext *ctx)
     return nullptr;
 }
 
-Object Semantics::visitForStatement(PascalParser::ForStatementContext *ctx)
+Object Semantics::visitForStatement(goParser::ForStatementContext *ctx)
 {
-    PascalParser::VariableContext *varCtx = ctx->variable();
+    bool like_while = ctx->whileStatement() == nullptr;
+    if (!like_while)
+    {
+    	visit(ctx->whileStatement());
+    	return nullptr;
+    }
+	goParser::VariableContext *varCtx = ctx->variable();
     visit(varCtx);
 
     string controlName = toLowerCase(varCtx->variableIdentifier()->getText());
@@ -831,8 +826,8 @@ Object Semantics::visitForStatement(PascalParser::ForStatementContext *ctx)
                    controlName);
     }
 
-    PascalParser::ExpressionContext *startCtx = ctx->expression()[0];
-    PascalParser::ExpressionContext *endCtx   = ctx->expression()[1];
+    goParser::ExpressionContext *startCtx = ctx->expression()[0];
+    goParser::ExpressionContext *endCtx   = ctx->expression()[1];
 
     visit(startCtx);
     visit(endCtx);
@@ -844,11 +839,11 @@ Object Semantics::visitForStatement(PascalParser::ForStatementContext *ctx)
     return nullptr;
 }
 
-Object Semantics::visitProcedureCallStatement(
-                            PascalParser::ProcedureCallStatementContext *ctx)
+/*Object Semantics::visitProcedureCallStatement(
+                            goParser::ProcedureCallStatementContext *ctx)
 {
-    PascalParser::ProcedureNameContext *nameCtx = ctx->procedureName();
-    PascalParser::ArgumentListContext *listCtx = ctx->argumentList();
+    goParser::ProcedureNameContext *nameCtx = ctx->procedureName();
+    goParser::ArgumentListContext *listCtx = ctx->argumentList();
     string name = toLowerCase(ctx->procedureName()->getText());
     SymtabEntry *procedureId = symtabStack->lookup(name);
     bool badName = false;
@@ -867,7 +862,7 @@ Object Semantics::visitProcedureCallStatement(
     // Bad procedure name. Do a simple arguments check and then leave.
     if (badName)
     {
-        for (PascalParser::ArgumentContext *exprCtx : listCtx->argument())
+        for (goParser::ArgumentContext *exprCtx : listCtx->argument())
         {
             visit(exprCtx);
         }
@@ -882,14 +877,14 @@ Object Semantics::visitProcedureCallStatement(
 
     nameCtx->entry = procedureId;
     return nullptr;
-}
+}*/
 
 Object Semantics::visitFunctionCallFactor(
-                                PascalParser::FunctionCallFactorContext *ctx)
+                                goParser::FunctionCallFactorContext *ctx)
 {
-    PascalParser::FunctionCallContext *callCtx = ctx->functionCall();
-    PascalParser::FunctionNameContext *nameCtx = callCtx->functionName();
-    PascalParser::ArgumentListContext *listCtx = callCtx->argumentList();
+    goParser::FunctionCallContext *callCtx = ctx->functionCall();
+    goParser::FunctionNameContext *nameCtx = callCtx->functionName();
+    goParser::ArgumentListContext *listCtx = callCtx->argumentList();
     string name = toLowerCase(callCtx->functionName()->getText());
     SymtabEntry *functionId = symtabStack->lookup(name);
     bool badName = false;
@@ -910,7 +905,7 @@ Object Semantics::visitFunctionCallFactor(
     // Bad function name. Do a simple arguments check and then leave.
     if (badName)
     {
-        for (PascalParser::ArgumentContext *exprCtx : listCtx->argument())
+        for (goParser::ArgumentContext *exprCtx : listCtx->argument())
         {
             visit(exprCtx);
         }
@@ -931,7 +926,7 @@ Object Semantics::visitFunctionCallFactor(
 }
 
 void Semantics::checkCallArguments(
-        PascalParser::ArgumentListContext *listCtx, vector<SymtabEntry *> *parms)
+        goParser::ArgumentListContext *listCtx, vector<SymtabEntry *> *parms)
 {
     int parmsCount = parms->size();
     int argsCount = listCtx != nullptr ? listCtx->argument().size() : 0;
@@ -945,8 +940,8 @@ void Semantics::checkCallArguments(
     // Check each argument against the corresponding parameter.
     for (int i = 0; i < parmsCount; i++)
     {
-        PascalParser::ArgumentContext *argCtx = listCtx->argument()[i];
-        PascalParser::ExpressionContext *exprCtx = argCtx->expression();
+        goParser::ArgumentContext *argCtx = listCtx->argument()[i];
+        goParser::ExpressionContext *exprCtx = argCtx->expression();
         visit(exprCtx);
 
         SymtabEntry *parmId = (*parms)[i];
@@ -979,22 +974,22 @@ void Semantics::checkCallArguments(
     }
 }
 
-bool Semantics::expressionIsVariable(PascalParser::ExpressionContext *exprCtx)
+bool Semantics::expressionIsVariable(goParser::ExpressionContext *exprCtx)
 {
     // Only a single simple expression?
     if (exprCtx->simpleExpression().size() == 1)
     {
-        PascalParser::SimpleExpressionContext *simpleCtx =
+        goParser::SimpleExpressionContext *simpleCtx =
                                                 exprCtx->simpleExpression()[0];
         // Only a single term?
         if (simpleCtx->term().size() == 1)
         {
-            PascalParser::TermContext *termCtx = simpleCtx->term()[0];
+            goParser::TermContext *termCtx = simpleCtx->term()[0];
 
             // Only a single factor?
             if (termCtx->factor().size() == 1)
             {
-                return dynamic_cast<PascalParser::VariableFactorContext *>(
+                return dynamic_cast<goParser::VariableFactorContext *>(
                                             termCtx->factor()[0]) != nullptr;
             }
         }
@@ -1003,9 +998,9 @@ bool Semantics::expressionIsVariable(PascalParser::ExpressionContext *exprCtx)
     return false;
 }
 
-Object Semantics::visitExpression(PascalParser::ExpressionContext *ctx)
+Object Semantics::visitExpression(goParser::ExpressionContext *ctx)
 {
-    PascalParser::SimpleExpressionContext *simpleCtx1 = ctx->simpleExpression()[0];
+    goParser::SimpleExpressionContext *simpleCtx1 = ctx->simpleExpression()[0];
 
     // First simple expression.
     visit(simpleCtx1);
@@ -1013,12 +1008,12 @@ Object Semantics::visitExpression(PascalParser::ExpressionContext *ctx)
     Typespec *simpleType1 = simpleCtx1->type;
     ctx->type = simpleType1;
 
-    PascalParser::RelOpContext *relopCtx = ctx->relOp();
+    goParser::RelOpContext *relopCtx = ctx->relOp();
 
     // Second simple expression?
     if (relopCtx != nullptr)
     {
-        PascalParser::SimpleExpressionContext *simpleCtx2 =
+        goParser::SimpleExpressionContext *simpleCtx2 =
                                                     ctx->simpleExpression()[1];
         visit(simpleCtx2);
 
@@ -1035,12 +1030,12 @@ Object Semantics::visitExpression(PascalParser::ExpressionContext *ctx)
 }
 
 Object Semantics::visitSimpleExpression(
-                                    PascalParser::SimpleExpressionContext *ctx)
+                                    goParser::SimpleExpressionContext *ctx)
 {
     int count = ctx->term().size();
-    PascalParser::SignContext *signCtx = ctx->sign();
+    goParser::SignContext *signCtx = ctx->sign();
     bool hasSign = signCtx != nullptr;
-    PascalParser::TermContext *termCtx1 = ctx->term()[0];
+    goParser::TermContext *termCtx1 = ctx->term()[0];
 
     if (hasSign)
     {
@@ -1059,7 +1054,7 @@ Object Semantics::visitSimpleExpression(
     for (int i = 1; i < count; i++)
     {
         string op = toLowerCase(ctx->addOp()[i-1]->getText());
-        PascalParser::TermContext *termCtx2 = ctx->term()[i];
+        goParser::TermContext *termCtx2 = ctx->term()[i];
         visit(termCtx2);
         Typespec *termType2 = termCtx2->type;
 
@@ -1156,10 +1151,10 @@ Object Semantics::visitSimpleExpression(
     return nullptr;
 }
 
-Object Semantics::visitTerm(PascalParser::TermContext *ctx)
+Object Semantics::visitTerm(goParser::TermContext *ctx)
 {
     int count = ctx->factor().size();
-    PascalParser::FactorContext *factorCtx1 = ctx->factor()[0];
+    goParser::FactorContext *factorCtx1 = ctx->factor()[0];
 
     // First factor.
     visit(factorCtx1);
@@ -1169,7 +1164,7 @@ Object Semantics::visitTerm(PascalParser::TermContext *ctx)
     for (int i = 1; i < count; i++)
     {
         string op = toLowerCase(ctx->mulOp()[i-1]->getText());
-        PascalParser::FactorContext *factorCtx2 = ctx->factor()[i];
+        goParser::FactorContext *factorCtx2 = ctx->factor()[i];
         visit(factorCtx2);
         Typespec *factorType2 = factorCtx2->type;
 
@@ -1265,18 +1260,18 @@ Object Semantics::visitTerm(PascalParser::TermContext *ctx)
     return nullptr;
 }
 
-Object Semantics::visitVariableFactor(PascalParser::VariableFactorContext *ctx)
+Object Semantics::visitVariableFactor(goParser::VariableFactorContext *ctx)
 {
-    PascalParser::VariableContext *varCtx = ctx->variable();
+    goParser::VariableContext *varCtx = ctx->variable();
     visit(varCtx);
     ctx->type = varCtx->type;
 
     return nullptr;
 }
 
-Object Semantics::visitVariable(PascalParser::VariableContext *ctx)
+Object Semantics::visitVariable(goParser::VariableContext *ctx)
 {
-    PascalParser::VariableIdentifierContext *varIdCtx =
+    goParser::VariableIdentifierContext *varIdCtx =
                                                     ctx->variableIdentifier();
 
     visit(varIdCtx);
@@ -1287,7 +1282,7 @@ Object Semantics::visitVariable(PascalParser::VariableContext *ctx)
 }
 
 Object Semantics::visitVariableIdentifier(
-                                PascalParser::VariableIdentifierContext *ctx)
+                                goParser::VariableIdentifierContext *ctx)
 {
 
     string variableName = toLowerCase(ctx->IDENTIFIER()->getText());
@@ -1323,25 +1318,25 @@ Object Semantics::visitVariableIdentifier(
     return nullptr;
 }
 
-Typespec *Semantics::variableDatatype(PascalParser::VariableContext *varCtx,
+Typespec *Semantics::variableDatatype(goParser::VariableContext *varCtx,
                                       Typespec *varType)
 {
     Typespec *type = varType;
 
-    for (PascalParser::ModifierContext *modCtx : varCtx->modifier())
+    for (goParser::ModifierContext *modCtx : varCtx->modifier())
     {
         // Subscripts.
         if (modCtx->indexList() != nullptr)
         {
-            PascalParser::IndexListContext *indexListCtx = modCtx->indexList();
+            goParser::IndexListContext *indexListCtx = modCtx->indexList();
 
             // Loop over the subscripts.
-            for (PascalParser::IndexContext *indexCtx : indexListCtx->index())
+            for (goParser::IndexContext *indexCtx : indexListCtx->index())
             {
                 if (type->getForm() == ARRAY)
                 {
                     Typespec *indexType = type->getArrayIndexType();
-                    PascalParser::ExpressionContext *exprCtx =
+                    goParser::ExpressionContext *exprCtx =
                                                         indexCtx->expression();
                     visit(exprCtx);
 
@@ -1364,7 +1359,7 @@ Typespec *Semantics::variableDatatype(PascalParser::VariableContext *varCtx,
             if (type->getForm() == RECORD)
             {
                 Symtab *symtab = type->getRecordSymtab();
-                PascalParser::FieldContext *fieldCtx = modCtx->field();
+                goParser::FieldContext *fieldCtx = modCtx->field();
                 string fieldName =
                                 toLowerCase(fieldCtx->IDENTIFIER()->getText());
                 SymtabEntry *fieldId = symtab->lookup(fieldName);
@@ -1393,11 +1388,11 @@ Typespec *Semantics::variableDatatype(PascalParser::VariableContext *varCtx,
     return type;
 }
 
-Object Semantics::visitNumberFactor(PascalParser::NumberFactorContext *ctx)
+Object Semantics::visitNumberFactor(goParser::NumberFactorContext *ctx)
 {
-    PascalParser::NumberContext          *numberCtx   = ctx->number();
-    PascalParser::UnsignedNumberContext  *unsignedCtx = numberCtx->unsignedNumber();
-    PascalParser::IntegerConstantContext *integerCtx  = unsignedCtx->integerConstant();
+    goParser::NumberContext          *numberCtx   = ctx->number();
+    goParser::UnsignedNumberContext  *unsignedCtx = numberCtx->unsignedNumber();
+    goParser::IntegerConstantContext *integerCtx  = unsignedCtx->integerConstant();
 
     ctx->type = (integerCtx != nullptr) ? Predefined::integerType
                                         : Predefined::realType;
@@ -1405,21 +1400,21 @@ Object Semantics::visitNumberFactor(PascalParser::NumberFactorContext *ctx)
     return nullptr;
 }
 
-Object Semantics::visitCharacterFactor(PascalParser::CharacterFactorContext *ctx)
+Object Semantics::visitCharacterFactor(goParser::CharacterFactorContext *ctx)
 {
     ctx->type = Predefined::charType;
     return nullptr;
 }
 
-Object Semantics::visitStringFactor(PascalParser::StringFactorContext *ctx)
+Object Semantics::visitStringFactor(goParser::StringFactorContext *ctx)
 {
     ctx->type = Predefined::stringType;
     return nullptr;
 }
 
-Object Semantics::visitNotFactor(PascalParser::NotFactorContext *ctx)
+Object Semantics::visitNotFactor(goParser::NotFactorContext *ctx)
 {
-    PascalParser::FactorContext *factorCtx = ctx->factor();
+    goParser::FactorContext *factorCtx = ctx->factor();
     visit(factorCtx);
 
     if (factorCtx->type != Predefined::booleanType)
@@ -1432,9 +1427,9 @@ Object Semantics::visitNotFactor(PascalParser::NotFactorContext *ctx)
 }
 
 Object Semantics::visitParenthesizedFactor(
-                                PascalParser::ParenthesizedFactorContext *ctx)
+                                goParser::ParenthesizedFactorContext *ctx)
 {
-    PascalParser::ExpressionContext *exprCtx = ctx->expression();
+    goParser::ExpressionContext *exprCtx = ctx->expression();
     visit(exprCtx);
     ctx->type = exprCtx->type;
 

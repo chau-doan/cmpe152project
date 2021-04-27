@@ -3,7 +3,7 @@
 
 #include <map>
 
-#include "PascalBaseVisitor.h"
+#include "goBaseVisitor.h"
 #include "antlr4-runtime.h"
 
 #include "intermediate/symtab/SymtabStack.h"
@@ -19,7 +19,7 @@ using namespace std;
 using namespace intermediate::symtab;
 using namespace intermediate::type;
 
-class Semantics : public PascalBaseVisitor
+class Semantics : public goBaseVisitor
 {
 private:
     BackendMode mode;
@@ -41,14 +41,14 @@ private:
      * @param exprCtx the ExpressionContext.
      * @return true if it's an expression only, else false.
      */
-    bool expressionIsVariable(PascalParser::ExpressionContext *exprCtx);
+    bool expressionIsVariable(goParser::ExpressionContext *exprCtx);
 
     /**
      * Perform semantic operations on procedure and function call arguments.
      * @param listCtx the ArgumentListContext.
      * @param parameters the vector of parameters to fill.
      */
-    void checkCallArguments(PascalParser::ArgumentListContext *listCtx,
+    void checkCallArguments(goParser::ArgumentListContext *listCtx,
                             vector<SymtabEntry *> *parms);
 
     /**
@@ -57,7 +57,7 @@ private:
      * @param varType the variable's datatype without the modifiers.
      * @return the datatype with any modifiers.
      */
-    Typespec *variableDatatype(PascalParser::VariableContext *varCtx,
+    Typespec *variableDatatype(goParser::VariableContext *varCtx,
                                Typespec *varType);
 
     /**
@@ -67,7 +67,7 @@ private:
      * @return the symbol table entry of the record type identifier.
      */
     SymtabEntry *createRecordType(
-                        PascalParser::RecordTypespecContext *recordTypeSpecCtx,
+                        goParser::RecordTypespecContext *recordTypeSpecCtx,
                         string recordTypeName);
 
     /**
@@ -84,7 +84,7 @@ private:
      * @return the symbol table.
      */
     Symtab *createRecordSymtab(
-                PascalParser::RecordFieldsContext *ctx, SymtabEntry *ownerId);
+                goParser::RecordFieldsContext *ctx, SymtabEntry *ownerId);
 
 public:
     Semantics(BackendMode mode) : mode(mode), programId(nullptr)
@@ -119,42 +119,42 @@ public:
      */
     static Object defaultValue(Typespec *type);
 
-    Object visitProgram(PascalParser::ProgramContext *ctx) override;
-    Object visitProgramHeader(PascalParser::ProgramHeaderContext *ctx) override;
-    Object visitConstantDefinition(PascalParser::ConstantDefinitionContext *ctx) override;
-    Object visitConstant(PascalParser::ConstantContext *ctx) override;
-    Object visitTypeDefinition(PascalParser::TypeDefinitionContext *ctx) override;
-    Object visitRecordTypespec(PascalParser::RecordTypespecContext *ctx) override;
-    Object visitSimpleTypespec(PascalParser::SimpleTypespecContext *ctx) override;
-    Object visitTypeIdentifierTypespec(PascalParser::TypeIdentifierTypespecContext *ctx) override;
-    Object visitTypeIdentifier(PascalParser::TypeIdentifierContext *ctx) override;
-    Object visitEnumerationTypespec(PascalParser::EnumerationTypespecContext *ctx) override;
-    Object visitSubrangeTypespec(PascalParser::SubrangeTypespecContext *ctx) override;
-    Object visitArrayTypespec(PascalParser::ArrayTypespecContext *ctx) override;
-    Object visitVariableDeclarations(PascalParser::VariableDeclarationsContext *ctx) override;
-    Object visitRoutineDefinition(PascalParser::RoutineDefinitionContext *ctx) override;
-    Object visitParameterDeclarationsList(PascalParser::ParameterDeclarationsListContext *ctx) override;
-    Object visitParameterDeclarations(PascalParser::ParameterDeclarationsContext *ctx) override;
-    Object visitAssignmentStatement(PascalParser::AssignmentStatementContext *ctx) override;
-    Object visitLhs(PascalParser::LhsContext *ctx) override;
-    Object visitIfStatement(PascalParser::IfStatementContext *ctx) override;
-    Object visitCaseStatement(PascalParser::CaseStatementContext *ctx) override;
-    Object visitRepeatStatement(PascalParser::RepeatStatementContext *ctx) override;
-    Object visitWhileStatement(PascalParser::WhileStatementContext *ctx) override;
-    Object visitForStatement(PascalParser::ForStatementContext *ctx) override;
-    Object visitProcedureCallStatement(PascalParser::ProcedureCallStatementContext *ctx) override;
-    Object visitFunctionCallFactor(PascalParser::FunctionCallFactorContext *ctx) override;
-    Object visitExpression(PascalParser::ExpressionContext *ctx) override;
-    Object visitSimpleExpression(PascalParser::SimpleExpressionContext *ctx) override;
-    Object visitTerm(PascalParser::TermContext *ctx) override;
-    Object visitVariableFactor(PascalParser::VariableFactorContext *ctx) override;
-    Object visitVariable(PascalParser::VariableContext *ctx) override;
-    Object visitVariableIdentifier(PascalParser::VariableIdentifierContext *ctx) override;
-    Object visitNumberFactor(PascalParser::NumberFactorContext *ctx) override;
-    Object visitCharacterFactor(PascalParser::CharacterFactorContext *ctx) override;
-    Object visitStringFactor(PascalParser::StringFactorContext *ctx) override;
-    Object visitNotFactor(PascalParser::NotFactorContext *ctx) override;
-    Object visitParenthesizedFactor(PascalParser::ParenthesizedFactorContext *ctx) override;
+    Object visitProgram(goParser::ProgramContext *ctx) override;
+    Object visitProgramHeader(goParser::ProgramHeaderContext *ctx) override;
+    Object visitConstantDefinition(goParser::ConstantDefinitionContext *ctx) override;
+    Object visitConstant(goParser::ConstantContext *ctx) override;
+    Object visitTypeDefinition(goParser::TypeDefinitionContext *ctx) override;
+    Object visitRecordTypespec(goParser::RecordTypespecContext *ctx) override;
+    Object visitSimpleTypespec(goParser::SimpleTypespecContext *ctx) override;
+    Object visitTypeIdentifierTypespec(goParser::TypeIdentifierTypespecContext *ctx) override;
+    Object visitTypeIdentifier(goParser::TypeIdentifierContext *ctx) override;
+    Object visitEnumerationTypespec(goParser::EnumerationTypespecContext *ctx) override;
+    Object visitSubrangeTypespec(goParser::SubrangeTypespecContext *ctx) override;
+    Object visitArrayTypespec(goParser::ArrayTypespecContext *ctx) override;
+    Object visitVariableDeclarations(goParser::VariableDeclarationsContext *ctx) override;
+    Object visitRoutineDefinition(goParser::RoutineDefinitionContext *ctx) override;
+    Object visitParameterDeclarationsList(goParser::ParameterDeclarationsListContext *ctx) override;
+    Object visitParameterDeclarations(goParser::ParameterDeclarationsContext *ctx) override;
+    Object visitAssignmentStatement(goParser::AssignmentStatementContext *ctx) override;
+    Object visitLhs(goParser::LhsContext *ctx) override;
+    Object visitIfStatement(goParser::IfStatementContext *ctx) override;
+    Object visitCaseStatement(goParser::CaseStatementContext *ctx) override;
+    //Object visitRepeatStatement(goParser::RepeatStatementContext *ctx) override;
+    Object visitWhileStatement(goParser::WhileStatementContext *ctx) override;
+    Object visitForStatement(goParser::ForStatementContext *ctx) override;
+    //Object visitProcedureCallStatement(goParser::ProcedureCallStatementContext *ctx) override;
+    Object visitFunctionCallFactor(goParser::FunctionCallFactorContext *ctx) override;
+    Object visitExpression(goParser::ExpressionContext *ctx) override;
+    Object visitSimpleExpression(goParser::SimpleExpressionContext *ctx) override;
+    Object visitTerm(goParser::TermContext *ctx) override;
+    Object visitVariableFactor(goParser::VariableFactorContext *ctx) override;
+    Object visitVariable(goParser::VariableContext *ctx) override;
+    Object visitVariableIdentifier(goParser::VariableIdentifierContext *ctx) override;
+    Object visitNumberFactor(goParser::NumberFactorContext *ctx) override;
+    Object visitCharacterFactor(goParser::CharacterFactorContext *ctx) override;
+    Object visitStringFactor(goParser::StringFactorContext *ctx) override;
+    Object visitNotFactor(goParser::NotFactorContext *ctx) override;
+    Object visitParenthesizedFactor(goParser::ParenthesizedFactorContext *ctx) override;
 };
 
 } // namespace frontend

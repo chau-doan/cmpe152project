@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 
-#include "PascalBaseVisitor.h"
+#include "goBaseVisitor.h"
 #include "antlr4-runtime.h"
 
 #include "../../Object.h"
@@ -20,7 +20,7 @@ namespace backend { namespace interpreter {
 using namespace std;
 using namespace std::chrono;
 
-Object Executor::visitProgram(PascalParser::ProgramContext *ctx)
+Object Executor::visitProgram(goParser::ProgramContext *ctx)
 {
     auto start = steady_clock::now();
 
@@ -40,7 +40,7 @@ Object Executor::visitProgram(PascalParser::ProgramContext *ctx)
     return nullptr;
 }
 
-Object Executor::visitStatement(PascalParser::StatementContext *ctx)
+Object Executor::visitStatement(goParser::StatementContext *ctx)
 {
     executionCount++;
     visitChildren(ctx);
@@ -49,16 +49,16 @@ Object Executor::visitStatement(PascalParser::StatementContext *ctx)
 }
 
 Object Executor::visitAssignmentStatement(
-                                PascalParser::AssignmentStatementContext *ctx)
+                                goParser::AssignmentStatementContext *ctx)
 {
-    PascalParser::ExpressionContext*exprCtx = ctx->rhs()->expression();
+    goParser::ExpressionContext*exprCtx = ctx->rhs()->expression();
     Object value = visit(exprCtx);
     assignValue(ctx->lhs()->variable(), value, exprCtx->type);
 
     return nullptr;
 }
 
-Cell *Executor::assignValue(PascalParser::VariableContext *varCtx,
+Cell *Executor::assignValue(goParser::VariableContext *varCtx,
                             const Object& value, Typespec *valueType)
 {
     Typespec *targetType = varCtx->type;
@@ -98,10 +98,10 @@ void Executor::assignValue(Cell *targetCell, Typespec *targetType,
     }
 }
 
-Object Executor::visitIfStatement(PascalParser::IfStatementContext *ctx)
+Object Executor::visitIfStatement(goParser::IfStatementContext *ctx)
 {
-    PascalParser::TrueStatementContext  *trueCtx  = ctx->trueStatement();
-    PascalParser::FalseStatementContext *falseCtx = ctx->falseStatement();
+    goParser::TrueStatementContext  *trueCtx  = ctx->trueStatement();
+    goParser::FalseStatementContext *falseCtx = ctx->falseStatement();
     bool value = visit(ctx->expression()).as<bool>();
 
     if      (value)               visit(trueCtx);
@@ -110,10 +110,10 @@ Object Executor::visitIfStatement(PascalParser::IfStatementContext *ctx)
     return nullptr;
 }
 
-Object Executor::visitCaseStatement(PascalParser::CaseStatementContext *ctx)
+Object Executor::visitCaseStatement(goParser::CaseStatementContext *ctx)
 {
-    PascalParser::ExpressionContext *exprCtx = ctx->expression();
-    PascalParser::CaseBranchListContext *branchListCtx = ctx->caseBranchList();
+    /*goParser::ExpressionContext *exprCtx = ctx->expression();
+    goParser::CaseBranchListContext *branchListCtx = ctx->caseBranchList();
 
     // First time: Create the jump table.
     if (ctx->jumpTable == nullptr)
@@ -130,7 +130,7 @@ Object Executor::visitCaseStatement(PascalParser::CaseStatementContext *ctx)
     auto *jumpTable = ctx->jumpTable;
     if (jumpTable->find(intValue) != jumpTable->end())
     {
-        PascalParser::StatementContext *stmtCtx = (*jumpTable)[intValue];
+        goParser::StatementContext *stmtCtx = (*jumpTable)[intValue];
         visit(stmtCtx);
     }
 
@@ -142,23 +142,23 @@ Object Executor::visitCaseStatement(PascalParser::CaseStatementContext *ctx)
  * @param branchListCtx the CaseBranchListContext.
  * @return the jump table.
  */
-map<int, PascalParser::StatementContext*> *Executor::createJumpTable(
-                            PascalParser::CaseBranchListContext *branchListCtx)
+/*map<int, goParser::StatementContext*> *Executor::createJumpTable(
+                            goParser::CaseBranchListContext *branchListCtx)
 {
-    auto *table = new map<int, PascalParser::StatementContext*>();
+    auto *table = new map<int, goParser::StatementContext*>();
     
     // Loop over the CASE branches.
-    for (PascalParser::CaseBranchContext *branchCtx :
+    for (goParser::CaseBranchContext *branchCtx :
                                                 branchListCtx->caseBranch())
     {
-        PascalParser::CaseConstantListContext *constListCtx =
+        goParser::CaseConstantListContext *constListCtx =
                                                 branchCtx->caseConstantList();
-        PascalParser::StatementContext *stmtCtx = branchCtx->statement();
+        goParser::StatementContext *stmtCtx = branchCtx->statement();
     
         if (constListCtx != nullptr)
         {
             // Loop over the CASE constants of each CASE branch.
-            for (PascalParser::CaseConstantContext *caseConstCtx :
+            for (goParser::CaseConstantContext *caseConstCtx :
                                                 constListCtx->caseConstant())
             {
                 (*table)[caseConstCtx->value] = stmtCtx;
@@ -166,12 +166,12 @@ map<int, PascalParser::StatementContext*> *Executor::createJumpTable(
         }
     }
 
-    return table;
+    return table;*/
 }
 
-Object Executor::visitRepeatStatement(PascalParser::RepeatStatementContext *ctx)
+/*Object Executor::visitRepeatStatement(goParser::RepeatStatementContext *ctx)
 {
-    PascalParser::StatementListContext *listCtx = ctx->statementList();
+    goParser::StatementListContext *listCtx = ctx->statementList();
     Object objValue;
     bool value;
 
@@ -182,11 +182,11 @@ Object Executor::visitRepeatStatement(PascalParser::RepeatStatementContext *ctx)
     } while (!value);
 
     return nullptr;
-}
+}*/
 
-Object Executor::visitWhileStatement(PascalParser::WhileStatementContext *ctx)
+Object Executor::visitWhileStatement(goParser::WhileStatementContext *ctx)
 {
-    PascalParser::StatementContext *stmtCtx = ctx->statement();
+    goParser::StatementContext *stmtCtx = ctx->statement();
     bool value = visit(ctx->expression()).as<bool>();
 
     while (value)
@@ -198,22 +198,35 @@ Object Executor::visitWhileStatement(PascalParser::WhileStatementContext *ctx)
     return nullptr;
 }
 
-Object Executor::visitForStatement(PascalParser::ForStatementContext *ctx)
+Object Executor::visitForStatement(goParser::ForStatementContext *ctx)
 {
-    PascalParser::VariableContext *controlCtx = ctx->variable();
-    PascalParser::ExpressionContext *startExprCtx = ctx->expression()[0];
-    PascalParser::ExpressionContext *stopExprCtx  = ctx->expression()[1];
+    bool like_while = ctx->whileStatement() == nullptr;
+    if (!like_while)
+    {
+    	visit(ctx->whileStatement());
+    	return nullptr;
+    }
+	goParser::VariableContext *controlCtx = ctx->variable();
+    goParser::ExpressionContext *startExprCtx = ctx->expression()[0];
+    goParser::ExpressionContext *stopExprCtx  = ctx->expression()[1];
 
     // Initial value.
     Object startValue = visit(startExprCtx);
     assignValue(controlCtx, startValue, startExprCtx->type);
 
     // Terminal value.
-    bool to = ctx->TO() != nullptr;
+    //bool to = ctx->TO() != nullptr;
     Object stopValue = visit(stopExprCtx);
-    
+    bool value = visit(ctx->expression()[1]).as<bool>();
+    goParser::StatementContext *stmtCtx = ctx->statement();
+    while (value)
+    {
+    	visit(stmtCtx);
+    	visit(ctx->assignmentStatement());
+    	value = visit(ctx->expression()[1]).as<bool>();
+    }
     // Integer control values.
-    if (controlCtx->type->baseType() == Predefined::integerType)
+    /*if (controlCtx->type->baseType() == Predefined::integerType)
     {
         int control = startValue.as<int>();
         int stop    = stopValue.as<int>();
@@ -262,16 +275,16 @@ Object Executor::visitForStatement(PascalParser::ForStatementContext *ctx)
                 assignValue(controlCtx, nextValue, Predefined::charType);
             }
         }
-    }
+    }*/
 
     return nullptr;
 }
 
-Object Executor::visitProcedureCallStatement(
-                            PascalParser::ProcedureCallStatementContext *ctx)
+/*Object Executor::visitProcedureCallStatement(
+                            goParser::ProcedureCallStatementContext *ctx)
 {
     SymtabEntry *routineId = ctx->procedureName()->entry;
-    PascalParser::ArgumentListContext *argListCtx = ctx->argumentList();
+    goParser::ArgumentListContext *argListCtx = ctx->argumentList();
     StackFrame *newFrame = new StackFrame(routineId);
 
     // Execute any actual parameters and initialize
@@ -288,20 +301,20 @@ Object Executor::visitProcedureCallStatement(
 
     // Execute the routine.
 //    Object *stmtObj = routineId->getExecutable();
-//    PascalParser::CompoundStatementContext *stmtCtx =
-//    				(*stmtObj).as<PascalParser::CompoundStatementContext *>();
+//    goParser::CompoundStatementContext *stmtCtx =
+//    				(*stmtObj).as<goParser::CompoundStatementContext *>();
     Object stmtObj = routineId->getExecutable();
-    PascalParser::CompoundStatementContext *stmtCtx =
-                    stmtObj.as<PascalParser::CompoundStatementContext *>();
+    goParser::CompoundStatementContext *stmtCtx =
+                    stmtObj.as<goParser::CompoundStatementContext *>();
     visit(stmtCtx);
 
     // Pop off the routine's stack frame.
     runtimeStack.pop();
 
     return nullptr;
-}
+}*/
 
-void Executor::executeCallArguments(PascalParser::ArgumentListContext *argListCtx,
+void Executor::executeCallArguments(goParser::ArgumentListContext *argListCtx,
                                     vector<SymtabEntry*> *parameters,
                                     StackFrame *frame)
 {
@@ -312,7 +325,7 @@ void Executor::executeCallArguments(PascalParser::ArgumentListContext *argListCt
         string parmName = parmId->getName();
         Kind parmKind = parmId->getKind();
         Cell *parmCell = frame->getCell(parmName);
-        PascalParser::ArgumentContext *argCtx = argListCtx->argument()[i];
+        goParser::ArgumentContext *argCtx = argListCtx->argument()[i];
         Object value = visit(argCtx);
         
         // Value parameter: Copy the argument's value.
@@ -325,11 +338,11 @@ void Executor::executeCallArguments(PascalParser::ArgumentListContext *argListCt
         // Reference parameter: Copy the argument's cell.
         else
         {
-            PascalParser::FactorContext *factorCtx =
+            goParser::FactorContext *factorCtx =
                     argCtx->expression()->simpleExpression()[0]
                                                        ->term()[0]->factor()[0];
-            PascalParser::VariableContext *varCtx =
-                ((PascalParser::VariableFactorContext *) factorCtx)->variable();
+            goParser::VariableContext *varCtx =
+                ((goParser::VariableFactorContext *) factorCtx)->variable();
             
             Cell *argCell = visitVariable(varCtx).as<Cell*>();
             frame->replaceCell(parmName, argCell);
@@ -337,11 +350,11 @@ void Executor::executeCallArguments(PascalParser::ArgumentListContext *argListCt
     }
 }
 
-Object Executor::visitExpression(PascalParser::ExpressionContext *ctx)
+Object Executor::visitExpression(goParser::ExpressionContext *ctx)
 {
-    PascalParser::SimpleExpressionContext *simpleCtx1 =
+    goParser::SimpleExpressionContext *simpleCtx1 =
                                                     ctx->simpleExpression()[0];
-    PascalParser::RelOpContext *relOpCtx = ctx->relOp();
+    goParser::RelOpContext *relOpCtx = ctx->relOp();
     Object operand1 = visit(simpleCtx1);
     Typespec *type1 = simpleCtx1->type;
 
@@ -349,7 +362,7 @@ Object Executor::visitExpression(PascalParser::ExpressionContext *ctx)
     if (relOpCtx != nullptr)
     {
         string op = relOpCtx->getText();
-        PascalParser::SimpleExpressionContext *simpleCtx2 =
+        goParser::SimpleExpressionContext *simpleCtx2 =
                                                     ctx->simpleExpression()[1];
         Object operand2 = visit(simpleCtx2);
         Typespec *type2 = simpleCtx2->type;
@@ -428,7 +441,7 @@ Object Executor::visitExpression(PascalParser::ExpressionContext *ctx)
     return operand1;
 }
 
-Object Executor::visitSimpleExpression(PascalParser::SimpleExpressionContext *ctx)
+Object Executor::visitSimpleExpression(goParser::SimpleExpressionContext *ctx)
 {
     {
         int count = ctx->term().size();
@@ -436,7 +449,7 @@ Object Executor::visitSimpleExpression(PascalParser::SimpleExpressionContext *ct
                       && (ctx->sign()->getText() == "-");
 
         // First term.
-        PascalParser::TermContext *termCtx1 = ctx->term()[0];
+        goParser::TermContext *termCtx1 = ctx->term()[0];
         Object operand1 = visit(termCtx1);
         Typespec *type1 = termCtx1->type;
 
@@ -458,7 +471,7 @@ Object Executor::visitSimpleExpression(PascalParser::SimpleExpressionContext *ct
         for (int i = 1; i < count; i++)
         {
             string op = toLowerCase(ctx->addOp()[i-1]->getText());
-            PascalParser::TermContext *termCtx2 = ctx->term()[i];
+            goParser::TermContext *termCtx2 = ctx->term()[i];
             Object operand2 = visit(termCtx2);
             Typespec *type2 = termCtx2->type;
 
@@ -512,12 +525,12 @@ Object Executor::visitSimpleExpression(PascalParser::SimpleExpressionContext *ct
     }
 }
 
-Object Executor::visitTerm(PascalParser::TermContext *ctx)
+Object Executor::visitTerm(goParser::TermContext *ctx)
 {
     int count = ctx->factor().size();
 
     // First factor.
-    PascalParser::FactorContext *factorCtx1 = ctx->factor()[0];
+    goParser::FactorContext *factorCtx1 = ctx->factor()[0];
     Object operand1 = visit(factorCtx1);
     Typespec *type1 = factorCtx1->type;
 
@@ -525,7 +538,7 @@ Object Executor::visitTerm(PascalParser::TermContext *ctx)
     for (int i = 1; i < count; i++)
     {
         string op = toLowerCase(ctx->mulOp()[i-1]->getText());
-        PascalParser::FactorContext *factorCtx2 = ctx->factor()[i];
+        goParser::FactorContext *factorCtx2 = ctx->factor()[i];
         Object operand2 = visit(factorCtx2);
         Typespec *type2 = factorCtx2->type;
 
@@ -603,9 +616,9 @@ Object Executor::visitTerm(PascalParser::TermContext *ctx)
     return operand1;
 }
 
-Object Executor::visitVariableFactor(PascalParser::VariableFactorContext *ctx)
+Object Executor::visitVariableFactor(goParser::VariableFactorContext *ctx)
 {
-    PascalParser::VariableContext *varCtx = ctx->variable();
+    goParser::VariableContext *varCtx = ctx->variable();
     Kind kind = varCtx->entry->getKind();
 
     // Obtain a constant's value from its symbol table entry.
@@ -633,7 +646,7 @@ Object Executor::visitVariableFactor(PascalParser::VariableFactorContext *ctx)
     }
 }
 
-Object Executor::visitVariable(PascalParser::VariableContext *ctx)
+Object Executor::visitVariable(goParser::VariableContext *ctx)
 {
     SymtabEntry *variableId = ctx->entry;
     string variableName = variableId->getName();
@@ -645,13 +658,13 @@ Object Executor::visitVariable(PascalParser::VariableContext *ctx)
     Cell *variableCell = frame->getCell(variableName);
 
     // Execute any array subscripts or record fields.
-    for (PascalParser::ModifierContext *modCtx : ctx->modifier())
+    for (goParser::ModifierContext *modCtx : ctx->modifier())
     {
         // Subscripts.
         if (modCtx->indexList() != nullptr)
         {
             // Compute a new reference for each subscript.
-            for (PascalParser::IndexContext *indexCtx :
+            for (goParser::IndexContext *indexCtx :
                                                 modCtx->indexList()->index())
             {
                 Typespec *indexType = variableType->getArrayIndexType();
@@ -689,7 +702,7 @@ Object Executor::visitVariable(PascalParser::VariableContext *ctx)
     return variableCell;
 }
 
-Object Executor::visitNumberFactor(PascalParser::NumberFactorContext *ctx)
+Object Executor::visitNumberFactor(goParser::NumberFactorContext *ctx)
 {
     Typespec *type = ctx->type;
 
@@ -703,23 +716,23 @@ Object Executor::visitNumberFactor(PascalParser::NumberFactorContext *ctx)
     }
 }
 
-Object Executor::visitCharacterFactor(PascalParser::CharacterFactorContext *ctx)
+Object Executor::visitCharacterFactor(goParser::CharacterFactorContext *ctx)
 {
     return ctx->getText()[1];
 }
 
-Object Executor::visitStringFactor(PascalParser::StringFactorContext *ctx)
+Object Executor::visitStringFactor(goParser::StringFactorContext *ctx)
 {
-    string pascalString = ctx->stringConstant()->STRING()->getText();
-    return convertString(pascalString, false);
+    string goString = ctx->stringConstant()->STRING()->getText();
+    return convertString(goString, false);
 }
 
 Object Executor::visitFunctionCallFactor(
-                                PascalParser::FunctionCallFactorContext *ctx)
+                                goParser::FunctionCallFactorContext *ctx)
 {
-    PascalParser::FunctionCallContext *callCtx = ctx->functionCall();
+    goParser::FunctionCallContext *callCtx = ctx->functionCall();
     SymtabEntry *routineId = callCtx->functionName()->entry;
-    PascalParser::ArgumentListContext *argListCtx = callCtx->argumentList();
+    goParser::ArgumentListContext *argListCtx = callCtx->argumentList();
     StackFrame *newFrame = new StackFrame(routineId);
     
     // Execute any call arguments and initialize
@@ -736,11 +749,11 @@ Object Executor::visitFunctionCallFactor(
 
     // Execute the routine.
 //    Object *stmtObj = routineId->getExecutable();
-//    PascalParser::CompoundStatementContext *stmtCtx =
-//    				(*stmtObj).as<PascalParser::CompoundStatementContext *>();
+//    goParser::CompoundStatementContext *stmtCtx =
+//    				(*stmtObj).as<goParser::CompoundStatementContext *>();
     Object stmtObj = routineId->getExecutable();
-    PascalParser::CompoundStatementContext *stmtCtx =
-                    stmtObj.as<PascalParser::CompoundStatementContext *>();
+    goParser::CompoundStatementContext *stmtCtx =
+                    stmtObj.as<goParser::CompoundStatementContext *>();
     visit(stmtCtx);
 
     // Get the function value from its associated variable.
@@ -754,19 +767,19 @@ Object Executor::visitFunctionCallFactor(
     return functionValue;
 }
 
-Object Executor::visitNotFactor(PascalParser::NotFactorContext *ctx)
+Object Executor::visitNotFactor(goParser::NotFactorContext *ctx)
 {
     bool value = visit(ctx->factor()).as<bool>();
     return !value;
 }
 
 Object Executor::visitParenthesizedFactor(
-                                PascalParser::ParenthesizedFactorContext *ctx)
+                                goParser::ParenthesizedFactorContext *ctx)
 {
     return visit(ctx->expression());
 }
 
-Object Executor::visitWritelnStatement(PascalParser::WritelnStatementContext *ctx)
+Object Executor::visitWritelnStatement(goParser::WritelnStatementContext *ctx)
 {
     visitChildren(ctx);
     cout << endl;
@@ -774,10 +787,10 @@ Object Executor::visitWritelnStatement(PascalParser::WritelnStatementContext *ct
     return nullptr;
 }
 
-Object Executor::visitWriteArguments(PascalParser::WriteArgumentsContext *ctx)
+Object Executor::visitWriteArguments(goParser::WriteArgumentsContext *ctx)
 {
     // Loop over each argument.
-    for (PascalParser::WriteArgumentContext *argCtx : ctx->writeArgument())
+    for (goParser::WriteArgumentContext *argCtx : ctx->writeArgument())
     {
         Typespec *type = argCtx->expression()->type;
         string argText = argCtx->getText();
@@ -795,7 +808,7 @@ Object Executor::visitWriteArguments(PascalParser::WriteArgumentsContext *ctx)
             string format("%");
             
             // Create the format string.
-            PascalParser::FieldWidthContext *fwCtx = argCtx->fieldWidth();
+            goParser::FieldWidthContext *fwCtx = argCtx->fieldWidth();
             if (fwCtx != nullptr)
             {
                 string sign = (   (fwCtx->sign() != nullptr)
@@ -803,7 +816,7 @@ Object Executor::visitWriteArguments(PascalParser::WriteArgumentsContext *ctx)
                             ? "-" : "";
                 format += sign + fwCtx->integerConstant()->getText();
                 
-                PascalParser::DecimalPlacesContext *dpCtx =
+                goParser::DecimalPlacesContext *dpCtx =
                                                     fwCtx->decimalPlaces();
                 if (dpCtx != nullptr)
                 {
@@ -844,7 +857,7 @@ Object Executor::visitWriteArguments(PascalParser::WriteArgumentsContext *ctx)
     return nullptr;
 }
 
-Object Executor::visitReadlnStatement(PascalParser::ReadlnStatementContext *ctx)
+/*Object Executor::visitReadlnStatement(goParser::ReadlnStatementContext *ctx)
 {
     visitChildren(ctx);
     cin.ignore(4096, '\n');
@@ -852,14 +865,14 @@ Object Executor::visitReadlnStatement(PascalParser::ReadlnStatementContext *ctx)
     return nullptr;
 }
 
-Object Executor::visitReadArguments(PascalParser::ReadArgumentsContext *ctx)
+Object Executor::visitReadArguments(goParser::ReadArgumentsContext *ctx)
 {
     int size = ctx->variable().size();
 
     // Loop over read arguments.
     for (int i = 0; i < size; i++)
     {
-        PascalParser::VariableContext *varCtx = ctx->variable()[i];
+        goParser::VariableContext *varCtx = ctx->variable()[i];
         Typespec *varType = varCtx->type;
         
         if (varType == Predefined::integerType)
@@ -894,6 +907,6 @@ Object Executor::visitReadArguments(PascalParser::ReadArgumentsContext *ctx)
     }
 
     return nullptr;
-}
+}*/
 
 }} // namespace backend::converter

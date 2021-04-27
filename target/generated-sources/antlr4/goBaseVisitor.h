@@ -86,6 +86,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitArrayTypespec(goParser::ArrayTypespecContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitRecordTypespec(goParser::RecordTypespecContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitTypeIdentifierTypespec(goParser::TypeIdentifierTypespecContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -107,6 +115,22 @@ public:
   }
 
   virtual antlrcpp::Any visitSubrangeType(goParser::SubrangeTypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitArrayType(goParser::ArrayTypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitArrayDimensionList(goParser::ArrayDimensionListContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitRecordType(goParser::RecordTypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitRecordFields(goParser::RecordFieldsContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -223,6 +247,10 @@ public:
   }
 
   virtual antlrcpp::Any visitForStatement(goParser::ForStatementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitWhileStatement(goParser::WhileStatementContext *ctx) override {
     return visitChildren(ctx);
   }
 

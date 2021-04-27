@@ -28,7 +28,7 @@ public:
      * Emit code for a program.
      * @param *ctx the ProgramContext.
      */
-    void emitProgram(PascalParser::ProgramContext *ctx);
+    void emitProgram(goParser::ProgramContext *ctx);
 
     /*
      * Create a new compiler instance for a record.
@@ -45,7 +45,7 @@ public:
      * Emit code for a declared procedure or function
      * @param routineId the symbol table entry of the routine's name.
      */
-    void emitRoutine(PascalParser::RoutineDefinitionContext *ctx);
+    void emitRoutine(goParser::RoutineDefinitionContext *ctx);
 
 private:
     /*
@@ -66,13 +66,13 @@ private:
     /*
      * Emit code for any nested procedures and functions.
      */
-    void emitSubroutines(PascalParser::RoutinesPartContext *ctx);
+    void emitSubroutines(goParser::RoutinesPartContext *ctx);
 
     /*
      * Emit code for the program body as the main method.
      * @param *ctx the ProgramContext.
      */
-    void emitMainMethod(PascalParser::ProgramContext *ctx);
+    void emitMainMethod(goParser::ProgramContext *ctx);
 
     /*
      * Emit the main method prologue.

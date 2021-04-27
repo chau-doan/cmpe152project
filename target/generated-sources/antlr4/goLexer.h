@@ -26,8 +26,8 @@ public:
     TYPE = 27, ARRAY = 28, OF = 29, RECORD = 30, VAR = 31, BEGIN = 32, END = 33, 
     DIV = 34, MOD = 35, AND = 36, OR = 37, NOT = 38, IF = 39, THEN = 40, 
     ELSE = 41, CASE = 42, FOR = 43, PRINT = 44, PRINTLN = 45, FUNC = 46, 
-    SWITCH = 47, DEFAULT = 48, IDENTIFIER = 49, INT = 50, DOUBLE = 51, NEWLINE = 52, 
-    WS = 53, QUOTE = 54, CHAR = 55, STRING = 56, COMMENT = 57
+    SWITCH = 47, DEFAULT = 48, FMT = 49, IDENTIFIER = 50, INT = 51, DOUBLE = 52, 
+    NEWLINE = 53, WS = 54, QUOTE = 55, CHAR = 56, STRING = 57, COMMENT = 58
   };
 
   goLexer(antlr4::CharStream *input);

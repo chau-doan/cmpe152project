@@ -1,4 +1,4 @@
-#include "PascalBaseVisitor.h"
+#include "goBaseVisitor.h"
 #include "antlr4-runtime.h"
 
 #include "intermediate/symtab/Predefined.h"
@@ -9,11 +9,11 @@
 
 namespace backend { namespace compiler {
 
-void ExpressionGenerator::emitExpression(PascalParser::ExpressionContext *ctx)
+void ExpressionGenerator::emitExpression(goParser::ExpressionContext *ctx)
 {
-    PascalParser::SimpleExpressionContext *simpleCtx1 =
+    goParser::SimpleExpressionContext *simpleCtx1 =
                                             ctx->simpleExpression()[0];
-    PascalParser::RelOpContext *relOpCtx = ctx->relOp();
+    goParser::RelOpContext *relOpCtx = ctx->relOp();
     Typespec *type1 = simpleCtx1->type;
     emitSimpleExpression(simpleCtx1);
 
@@ -21,7 +21,7 @@ void ExpressionGenerator::emitExpression(PascalParser::ExpressionContext *ctx)
     if (relOpCtx != nullptr)
     {
         string op = relOpCtx->getText();
-        PascalParser::SimpleExpressionContext *simpleCtx2 =
+        goParser::SimpleExpressionContext *simpleCtx2 =
                                             ctx->simpleExpression()[1];
         Typespec *type2 = simpleCtx2->type;
 
@@ -99,14 +99,14 @@ void ExpressionGenerator::emitExpression(PascalParser::ExpressionContext *ctx)
     }
 }
 
-void ExpressionGenerator::emitSimpleExpression(PascalParser::SimpleExpressionContext *ctx)
+void ExpressionGenerator::emitSimpleExpression(goParser::SimpleExpressionContext *ctx)
 {
     int count = ctx->term().size();
     bool negate =    (ctx->sign() != nullptr)
                   && (ctx->sign()->getText() == "-");
 
     // First term.
-    PascalParser::TermContext *termCtx1 = ctx->term()[0];
+    goParser::TermContext *termCtx1 = ctx->term()[0];
     Typespec *type1 = termCtx1->type;
     emitTerm(termCtx1);
 
@@ -116,7 +116,7 @@ void ExpressionGenerator::emitSimpleExpression(PascalParser::SimpleExpressionCon
     for (int i = 1; i < count; i++)
     {
         string op = toLowerCase(ctx->addOp()[i-1]->getText());
-        PascalParser::TermContext *termCtx2 = ctx->term()[i];
+        goParser::TermContext *termCtx2 = ctx->term()[i];
         Typespec *type2 = termCtx2->type;
 
         bool integerMode = false;
@@ -187,12 +187,12 @@ void ExpressionGenerator::emitSimpleExpression(PascalParser::SimpleExpressionCon
     }
 }
 
-void ExpressionGenerator::emitTerm(PascalParser::TermContext *ctx)
+void ExpressionGenerator::emitTerm(goParser::TermContext *ctx)
 {
     int count = ctx->factor().size();
 
     // First factor.
-    PascalParser::FactorContext *factorCtx1 = ctx->factor()[0];
+    goParser::FactorContext *factorCtx1 = ctx->factor()[0];
     Typespec *type1 = factorCtx1->type;
     compiler->visit(factorCtx1);
 
@@ -200,7 +200,7 @@ void ExpressionGenerator::emitTerm(PascalParser::TermContext *ctx)
     for (int i = 1; i < count; i++)
     {
         string op = toLowerCase(ctx->mulOp()[i-1]->getText());
-        PascalParser::FactorContext *factorCtx2 = ctx->factor()[i];
+        goParser::FactorContext *factorCtx2 = ctx->factor()[i];
         Typespec *type2 = factorCtx2->type;
 
         bool integerMode = false;
@@ -243,14 +243,14 @@ void ExpressionGenerator::emitTerm(PascalParser::TermContext *ctx)
     }
 }
 
-void ExpressionGenerator::emitNotFactor(PascalParser::NotFactorContext *ctx)
+void ExpressionGenerator::emitNotFactor(goParser::NotFactorContext *ctx)
 {
     compiler->visit(ctx->factor());
     emit(ICONST_1);
     emit(IXOR);
 }
 
-void ExpressionGenerator::emitLoadValue(PascalParser::VariableContext *varCtx)
+void ExpressionGenerator::emitLoadValue(goParser::VariableContext *varCtx)
 {
     // Load the scalar value or structure address.
     Typespec *variableType = emitLoadVariable(varCtx);
@@ -259,7 +259,7 @@ void ExpressionGenerator::emitLoadValue(PascalParser::VariableContext *varCtx)
     int modifierCount = varCtx->modifier().size();
     if (modifierCount > 0)
     {
-        PascalParser::ModifierContext *lastModCtx =
+        goParser::ModifierContext *lastModCtx =
                                         varCtx->modifier()[modifierCount - 1];
 
         if (lastModCtx->indexList() != nullptr)
@@ -274,7 +274,7 @@ void ExpressionGenerator::emitLoadValue(PascalParser::VariableContext *varCtx)
 }
 
 Typespec *ExpressionGenerator::emitLoadVariable(
-                                        PascalParser::VariableContext *varCtx)
+                                        goParser::VariableContext *varCtx)
 {
     SymtabEntry *variableId = varCtx->entry;
     Typespec *variableType = variableId->getType();
@@ -286,7 +286,7 @@ Typespec *ExpressionGenerator::emitLoadVariable(
     // Loop over subscript and field modifiers.
     for (int i = 0; i < modifierCount; ++i)
     {
-        PascalParser::ModifierContext *modCtx = varCtx->modifier()[i];
+        goParser::ModifierContext *modCtx = varCtx->modifier()[i];
         bool lastModifier = i == modifierCount - 1;
 
         // Subscript
@@ -307,7 +307,7 @@ Typespec *ExpressionGenerator::emitLoadVariable(
 }
 
 Typespec *ExpressionGenerator::emitLoadArrayElementAccess(
-                                PascalParser::IndexListContext *indexListCtx,
+                                goParser::IndexListContext *indexListCtx,
                                 Typespec *elmtType, bool lastModifier)
 {
     int indexCount = indexListCtx->index().size();
@@ -315,7 +315,7 @@ Typespec *ExpressionGenerator::emitLoadArrayElementAccess(
     // Loop over the subscripts.
     for (int i = 0; i < indexCount; i++)
     {
-        PascalParser::IndexContext *indexCtx = indexListCtx->index()[i];
+        goParser::IndexContext *indexCtx = indexListCtx->index()[i];
         emitExpression(indexCtx->expression());
 
         Typespec *indexType = elmtType->getArrayIndexType();
@@ -366,13 +366,13 @@ void ExpressionGenerator::emitLoadArrayElementValue(Typespec *elmtType)
 }
 
 void ExpressionGenerator::emitLoadRecordFieldValue(
-                    PascalParser::FieldContext *fieldCtx, Typespec *recordType)
+                    goParser::FieldContext *fieldCtx, Typespec *recordType)
 {
     emitLoadRecordField(fieldCtx, recordType);
 }
 
 Typespec *ExpressionGenerator::emitLoadRecordField(
-                    PascalParser::FieldContext *fieldCtx, Typespec *recordType)
+                    goParser::FieldContext *fieldCtx, Typespec *recordType)
 {
     SymtabEntry *fieldId = fieldCtx->entry;
     string fieldName = fieldId->getName();
@@ -385,13 +385,13 @@ Typespec *ExpressionGenerator::emitLoadRecordField(
     return fieldType;
 }
 
-void ExpressionGenerator::emitLoadIntegerConstant(PascalParser::NumberContext *intCtx)
+void ExpressionGenerator::emitLoadIntegerConstant(goParser::NumberContext *intCtx)
 {
     int value = stoi(intCtx->getText());
     emitLoadConstant(value);
 }
 
-void ExpressionGenerator::emitLoadRealConstant(PascalParser::NumberContext *realCtx)
+void ExpressionGenerator::emitLoadRealConstant(goParser::NumberContext *realCtx)
 {
     float value = stof(realCtx->getText());
     emitLoadConstant(value);

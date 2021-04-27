@@ -11,7 +11,7 @@
 
 #include <fstream>
 
-#include "PascalBaseVisitor.h"
+#include "goBaseVisitor.h"
 #include "antlr4-runtime.h"
 
 #include "intermediate/symtab/SymtabStack.h"
@@ -104,7 +104,7 @@ public:
      * Emit a statement comment.
      * @param ctx the StatementContext.
      */
-    void emitComment(PascalParser::StatementContext *ctx);
+    void emitComment(goParser::StatementContext *ctx);
 
     /**
      * Emit a label.
@@ -304,18 +304,18 @@ public:
     string typeDescriptor(SymtabEntry *id);
 
     /**
-     * Return a type descriptor for a Pascal datatype.
-     * @param pascalType the datatype.
+     * Return a type descriptor for a go datatype.
+     * @param goType the datatype.
      * @return the type descriptor.
      */
-    string typeDescriptor(Typespec *pascalType);
+    string typeDescriptor(Typespec *goType);
 
     /**
-     * Return the Java object name for a Pascal datatype.
-     * @param pascalType the datatype.
+     * Return the Java object name for a go datatype.
+     * @param goType the datatype.
      * @return the object name.
      */
-    string objectTypeName(Typespec *pascalType);
+    string objectTypeName(Typespec *goType);
 
     /**
      * Return whether or not a value needs to be cloned to pass by value.

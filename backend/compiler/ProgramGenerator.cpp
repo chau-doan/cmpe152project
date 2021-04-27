@@ -1,6 +1,6 @@
 #include <vector>
 
-#include "PascalBaseVisitor.h"
+#include "goBaseVisitor.h"
 #include "antlr4-runtime.h"
 
 #include "Directive.h"
@@ -13,7 +13,7 @@ namespace backend { namespace compiler {
 
 using namespace std;
 
-void ProgramGenerator::emitProgram(PascalParser::ProgramContext *ctx)
+void ProgramGenerator::emitProgram(goParser::ProgramContext *ctx)
 {
     programId = ctx->programHeader()->programIdentifier()->entry;
     Symtab *programSymtab = programId->getRoutineSymtab();
@@ -133,11 +133,11 @@ void ProgramGenerator::emitConstructor()
     localStack->reset();
 }
 
-void ProgramGenerator::emitSubroutines(PascalParser::RoutinesPartContext *ctx)
+void ProgramGenerator::emitSubroutines(goParser::RoutinesPartContext *ctx)
 {
     if (ctx != nullptr)
     {
-        for (PascalParser::RoutineDefinitionContext *defnCtx :
+        for (goParser::RoutineDefinitionContext *defnCtx :
                                                     ctx->routineDefinition())
         {
             compiler = new Compiler(compiler);
@@ -146,7 +146,7 @@ void ProgramGenerator::emitSubroutines(PascalParser::RoutinesPartContext *ctx)
     }
 }
 
-void ProgramGenerator::emitMainMethod(PascalParser::ProgramContext *ctx)
+void ProgramGenerator::emitMainMethod(goParser::ProgramContext *ctx)
 {
     emitLine();
     emitComment("MAIN");
@@ -222,11 +222,9 @@ void ProgramGenerator::emitMainEpilogue()
     close();  // the object file
 }
 
-void ProgramGenerator::emitRoutine(PascalParser::RoutineDefinitionContext *ctx)
+void ProgramGenerator::emitRoutine(goParser::RoutineDefinitionContext *ctx)
 {
-    SymtabEntry *routineId = ctx->procedureHead() != nullptr
-                            ? ctx->procedureHead()->routineIdentifier()->entry
-                            : ctx->functionHead()->routineIdentifier()->entry;
+    SymtabEntry *routineId = ctx->functionHead()->routineIdentifier()->entry;
     Symtab *routineSymtab = routineId->getRoutineSymtab();
 
     emitRoutineHeader(routineId);
@@ -239,8 +237,8 @@ void ProgramGenerator::emitRoutine(PascalParser::RoutineDefinitionContext *ctx)
     localVariables = new LocalVariables(routineSymtab->getMaxSlotNumber());
 
     // Emit code for the compound statement.
-    PascalParser::CompoundStatementContext *stmtCtx =
-        (PascalParser::CompoundStatementContext *) routineId->getExecutable();
+    goParser::CompoundStatementContext *stmtCtx =
+        (goParser::CompoundStatementContext *) routineId->getExecutable();
     compiler->visit(stmtCtx);
 
     emitRoutineReturn(routineId);

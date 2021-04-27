@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 
-#include "PascalBaseVisitor.h"
+#include "goBaseVisitor.h"
 #include "antlr4-runtime.h"
 
 #include "intermediate/symtab/Predefined.h"

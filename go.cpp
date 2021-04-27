@@ -5,8 +5,8 @@
 #include <chrono>
 
 #include "antlr4-runtime.h"
-#include "PascalLexer.h"
-#include "PascalParser.h"
+#include "goLexer.h"
+#include "goParser.h"
 
 #include "frontend/Listing.h"
 #include "frontend/SyntaxErrorHandler.h"
@@ -33,7 +33,7 @@ int main(int argc, const char *args[])
 {
     if (argc != 3)
     {
-        cout << "USAGE: PascalJava option sourceFileName" << endl;
+        cout << "USAGE: goJava option sourceFileName" << endl;
         cout << "   option: -convert, -execute, or -compile" << endl;
         return -1;
     }
@@ -67,13 +67,13 @@ int main(int argc, const char *args[])
 
     // Create a lexer which scans the character stream
     // to create a token stream.
-    PascalLexer lexer(&input);
+    goLexer lexer(&input);
     lexer.removeErrorListeners();
     lexer.addErrorListener(&syntaxErrorHandler);
     CommonTokenStream tokens(&lexer);
 
     // Create a parser which parses the token stream.
-    PascalParser parser(&tokens);
+    goParser parser(&tokens);
 
     // Pass 1: Check syntax and create the parse tree.
     cout << endl << "PASS 1 Syntax: ";
@@ -114,7 +114,7 @@ int main(int argc, const char *args[])
     {
         case EXECUTOR:
         {
-            // Pass 3: Execute the Pascal program.
+            // Pass 3: Execute the go program.
             cout << endl << "PASS 3 Execution:" << endl << endl;
             SymtabEntry *programId = pass2->getProgramId();
             Executor *pass3 = new Executor(programId);
@@ -124,7 +124,7 @@ int main(int argc, const char *args[])
 
         case CONVERTER:
         {
-            // Pass 3: Convert from Pascal to Java.
+            // Pass 3: Convert from go to Java.
             cout << endl << "PASS 3 Translation:" << endl;
             Converter *pass3 = new Converter();
             pass3->visit(tree);
@@ -136,7 +136,7 @@ int main(int argc, const char *args[])
 
         case COMPILER:
         {
-            // Pass 3: Compile the Pascal program.
+            // Pass 3: Compile the go program.
             cout << endl << "PASS 3 Compilation: ";
             SymtabEntry *programId = pass2->getProgramId();
             Compiler *pass3 = new Compiler(programId);

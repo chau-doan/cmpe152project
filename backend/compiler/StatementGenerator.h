@@ -25,73 +25,73 @@ public:
      * Emit code for an assignment statement.
      * @param ctx the AssignmentStatementContext.
      */
-    void emitAssignment(PascalParser::AssignmentStatementContext *ctx);
+    void emitAssignment(goParser::AssignmentStatementContext *ctx);
 
     /**
      * Emit code for an IF statement.
      * @param ctx the IfStatementContext.
      */
-    void emitIf(PascalParser::IfStatementContext *ctx);
+    void emitIf(goParser::IfStatementContext *ctx);
 
     /**
      * Emit code for a CASE statement.
      * @param ctx the CaseStatementContext.
      */
-    void emitCase(PascalParser::CaseStatementContext *ctx);
+    void emitCase(goParser::CaseStatementContext *ctx);
 
     /**
      * Emit code for a REPEAT statement.
      * @param ctx the RepeatStatementContext.
      */
-    void emitRepeat(PascalParser::RepeatStatementContext *ctx);
+    //void emitRepeat(goParser::RepeatStatementContext *ctx);
 
     /**
      * Emit code for a WHILE statement.
      * @param ctx the WhileStatementContext.
      */
-    void emitWhile(PascalParser::WhileStatementContext *ctx);
+    void emitWhile(goParser::WhileStatementContext *ctx);
 
     /**
      * Emit code for a FOR statement.
      * @param ctx the ForStatementContext.
      */
-    void emitFor(PascalParser::ForStatementContext *ctx);
+    void emitFor(goParser::ForStatementContext *ctx);
 
     /**
      * Emit code for a procedure call statement.
      * @param ctx the ProcedureCallStatementContext.
      */
-    void emitProcedureCall(PascalParser::ProcedureCallStatementContext *ctx);
+    //void emitProcedureCall(goParser::ProcedureCallStatementContext *ctx);
 
     /**
      * Emit code for a function call statement.
      * @param ctx the FunctionCallContext.
      */
-    void emitFunctionCall(PascalParser::FunctionCallContext *ctx);
+    void emitFunctionCall(goParser::FunctionCallContext *ctx);
 
     /**
      * Emit code for a WRITE statement.
      * @param ctx the WriteStatementContext.
      */
-    void emitWrite(PascalParser::WriteStatementContext *ctx);
+    void emitWrite(goParser::WriteStatementContext *ctx);
 
     /**
      * Emit code for a WRITELN statement.
      * @param ctx the WritelnStatementContext.
      */
-    void emitWriteln(PascalParser::WritelnStatementContext *ctx);
+    void emitWriteln(goParser::WritelnStatementContext *ctx);
 
     /**
      * Emit code for a READ statement.
      * @param ctx the ReadStatementContext.
      */
-    void emitRead(PascalParser::ReadStatementContext *ctx);
+    //void emitRead(goParser::ReadStatementContext *ctx);
 
     /**
      * Emit code for a READLN statement.
      * @param ctx the ReadlnStatementContext.
      */
-    void emitReadln(PascalParser::ReadlnStatementContext *ctx);
+    //void emitReadln(goParser::ReadlnStatementContext *ctx);
 
 private:
     /**
@@ -101,7 +101,7 @@ private:
      * @return the array list of table entries.
      */
     map<int, Label *> *createCaseMap(
-                            PascalParser::CaseBranchListContext *branchListCtx,
+                            goParser::CaseBranchListContext *branchListCtx,
                             vector<Label *>& branchLabels);
 
     /**
@@ -116,10 +116,10 @@ private:
      * Emit code for the branch statements.
      * @param branchListCtx the CaseBranchListContext.
      * @param branchLabels the branch labels
-     * @throws PascalCompilerException if an error occurred.
+     * @throws goCompilerException if an error occurred.
      */
     void emitBranchStatements(
-                            PascalParser::CaseBranchListContext *branchListCtx,
+                            goParser::CaseBranchListContext *branchListCtx,
                             vector<Label *>& branchLabels);
 
     /**
@@ -128,14 +128,14 @@ private:
      * @param argListCtx the ArgumentListContext.
      */
     void emitCall(SymtabEntry *routineId,
-                  PascalParser::ArgumentListContext *argListCtx);
+                  goParser::ArgumentListContext *argListCtx);
 
     /**
      * Emit code for a call to WRITE or WRITELN.
      * @param argsCtx the WriteArgumentsContext.
      * @param needLF true if need a line feed.
      */
-    void emitWrite(PascalParser::WriteArgumentsContext *argsCtx, bool needLF);
+    void emitWrite(goParser::WriteArgumentsContext *argsCtx, bool needLF);
 
     /**
      * Create the printf format string.
@@ -143,7 +143,7 @@ private:
      * @param format the format string to create.
      * @return the count of expression arguments.
      */
-    int createWriteFormat(PascalParser::WriteArgumentsContext *argsCtx,
+    int createWriteFormat(goParser::WriteArgumentsContext *argsCtx,
                           string& format, bool needLF);
 
     /**
@@ -151,7 +151,7 @@ private:
      * @param argsCtx
      * @param exprCount
      */
-    void emitArgumentsArray(PascalParser::WriteArgumentsContext *argsCtx,
+    void emitArgumentsArray(goParser::WriteArgumentsContext *argsCtx,
                             int exprCount);
 
     /**
@@ -159,7 +159,7 @@ private:
      * @param argsCtx the ReadArgumentsContext.
      * @param needSkip true if need to skip the rest of the input line.
      */
-    void emitRead(PascalParser::ReadArgumentsContext *argsCtx, bool needSkip);
+    //void emitRead(goParser::ReadArgumentsContext *argsCtx, bool needSkip);
 };
 
 }} // namespace backend::compiler

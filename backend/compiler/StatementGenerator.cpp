@@ -3,7 +3,7 @@
 #include <map>
 #include <algorithm>
 
-#include "PascalBaseVisitor.h"
+#include "goBaseVisitor.h"
 #include "antlr4-runtime.h"
 
 #include "intermediate/symtab/Predefined.h"
@@ -15,17 +15,17 @@ namespace backend { namespace compiler {
 using namespace std;
 using namespace intermediate;
 
-void StatementGenerator::emitAssignment(PascalParser::AssignmentStatementContext *ctx)
+void StatementGenerator::emitAssignment(goParser::AssignmentStatementContext *ctx)
 {
-    PascalParser::VariableContext *varCtx  = ctx->lhs()->variable();
-    PascalParser::ExpressionContext *exprCtx = ctx->rhs()->expression();
+    goParser::VariableContext *varCtx  = ctx->lhs()->variable();
+    goParser::ExpressionContext *exprCtx = ctx->rhs()->expression();
     SymtabEntry *varId = varCtx->entry;
     Typespec *varType  = varCtx->type;
     Typespec *exprType = exprCtx->type;
 
     // The last modifier, if any, is the variable's last subscript or field.
     int modifierCount = varCtx->modifier().size();
-    PascalParser::ModifierContext *lastModCtx = modifierCount == 0
+    goParser::ModifierContext *lastModCtx = modifierCount == 0
                             ? nullptr : varCtx->modifier()[modifierCount - 1];
 
     // The target variable has subscripts and/or fields.
@@ -59,11 +59,11 @@ void StatementGenerator::emitAssignment(PascalParser::AssignmentStatementContext
     }
 }
 
-void StatementGenerator::emitIf(PascalParser::IfStatementContext *ctx)
+void StatementGenerator::emitIf(goParser::IfStatementContext *ctx)
 {
     /***** Complete this member function. *****/
-	PascalParser::TrueStatementContext  *trueCtx  = ctx->trueStatement();
-	PascalParser::FalseStatementContext *falseCtx = ctx->falseStatement();
+	goParser::TrueStatementContext  *trueCtx  = ctx->trueStatement();
+	goParser::FalseStatementContext *falseCtx = ctx->falseStatement();
 	Label *nextlabel = new Label();
 	Label *falselabel = new Label();
 
@@ -80,10 +80,10 @@ void StatementGenerator::emitIf(PascalParser::IfStatementContext *ctx)
 	emitLabel(nextlabel);
 }
 
-void StatementGenerator::emitCase(PascalParser::CaseStatementContext *ctx)
+void StatementGenerator::emitCase(goParser::CaseStatementContext *ctx)
 {
     /***** Complete this member function. *****/
-	/*PascalParser::CaseBranchListContext *BranchList = ctx->caseBranchList();
+	/*goParser::CaseBranchListContext *BranchList = ctx->caseBranchList();
 	Label *statement = new Label[BranchList->caseBranch().size()-1];
 	Label *nextLabel = new Label();
 	compiler->visit(ctx->expression());
@@ -108,7 +108,7 @@ void StatementGenerator::emitCase(PascalParser::CaseStatementContext *ctx)
 	}
 
 	emitLabel(nextLabel);*/
-	PascalParser::CaseBranchListContext *BranchList = ctx->caseBranchList();
+	/*goParser::CaseBranchListContext *BranchList = ctx->caseBranchList();
 	Label *statement = new Label[BranchList->caseBranch().size()-1];
 	Label *nextLabel = new Label();
 	compiler->visit(ctx->expression());
@@ -147,12 +147,12 @@ void StatementGenerator::emitCase(PascalParser::CaseStatementContext *ctx)
 		emit(GOTO, nextLabel);
 	}
 
-	emitLabel(nextLabel);
+	emitLabel(nextLabel);*/
 
 
 }
-
-void StatementGenerator::emitRepeat(PascalParser::RepeatStatementContext *ctx)
+/*
+void StatementGenerator::emitRepeat(goParser::RepeatStatementContext *ctx)
 {
     Label *loopTopLabel  = new Label();
     Label *loopExitLabel = new Label();
@@ -166,11 +166,11 @@ void StatementGenerator::emitRepeat(PascalParser::RepeatStatementContext *ctx)
 
     emitLabel(loopExitLabel);
 }
-
-void StatementGenerator::emitWhile(PascalParser::WhileStatementContext *ctx)
+*/
+void StatementGenerator::emitWhile(goParser::WhileStatementContext *ctx)
 {
     /***** Complete this member function. *****/
-	PascalParser::StatementContext *stmtCtx = ctx->statement();
+	goParser::StatementContext *stmtCtx = ctx->statement();
 	Label *loopTopLabel = new Label();
 	Label *loopExitLabel = new Label();
 	emitLabel(loopTopLabel);
@@ -182,11 +182,11 @@ void StatementGenerator::emitWhile(PascalParser::WhileStatementContext *ctx)
 	emitLabel(loopExitLabel);
 }
 
-void StatementGenerator::emitFor(PascalParser::ForStatementContext *ctx)
+void StatementGenerator::emitFor(goParser::ForStatementContext *ctx)
 {
     /***** Complete this member function. *****/
 
-	compiler->visit(ctx->expression().at(0));
+	/*compiler->visit(ctx->expression().at(0));
 	emitStoreValue(ctx->variable()->entry, ctx->variable()->type);
 	//Load expression 0 to variable
 
@@ -215,12 +215,12 @@ void StatementGenerator::emitFor(PascalParser::ForStatementContext *ctx)
 	// add or subtract and store to variable
 	emit(GOTO, loopTopLabel);
 
-	emitLabel(loopExitLabel);
+	emitLabel(loopExitLabel);*/
 }
 
-void StatementGenerator::emitProcedureCall(PascalParser::ProcedureCallStatementContext *ctx)
+/*void StatementGenerator::emitProcedureCall(goParser::ProcedureCallStatementContext *ctx)
 {
-    /***** Complete this member function. *****/
+
 	int n = ctx->argumentList()->argument().size();
 	compiler->visit(ctx->argumentList());
 	string proc = ctx->procedureName()->getText();
@@ -231,9 +231,9 @@ void StatementGenerator::emitProcedureCall(PascalParser::ProcedureCallStatementC
 	header += ")V" ;
 	emit(INVOKESTATIC,header);
 
-}
+}*/
 
-void StatementGenerator::emitFunctionCall(PascalParser::FunctionCallContext *ctx)
+void StatementGenerator::emitFunctionCall(goParser::FunctionCallContext *ctx)
 {
     /***** Complete this member function. *****/
 	compiler->visit(ctx->argumentList());
@@ -247,22 +247,22 @@ void StatementGenerator::emitFunctionCall(PascalParser::FunctionCallContext *ctx
 }
 
 void StatementGenerator::emitCall(SymtabEntry *routineId,
-                                  PascalParser::ArgumentListContext *argListCtx)
+                                  goParser::ArgumentListContext *argListCtx)
 {
     /***** Complete this member function. *****/
 }
 
-void StatementGenerator::emitWrite(PascalParser::WriteStatementContext *ctx)
+void StatementGenerator::emitWrite(goParser::WriteStatementContext *ctx)
 {
     emitWrite(ctx->writeArguments(), false);
 }
 
-void StatementGenerator::emitWriteln(PascalParser::WritelnStatementContext *ctx)
+void StatementGenerator::emitWriteln(goParser::WritelnStatementContext *ctx)
 {
     emitWrite(ctx->writeArguments(), true);
 }
 
-void StatementGenerator::emitWrite(PascalParser::WriteArgumentsContext *argsCtx,
+void StatementGenerator::emitWrite(goParser::WriteArgumentsContext *argsCtx,
                       bool needLF)
 {
     emit(GETSTATIC, "java/lang/System/out", "Ljava/io/PrintStream;");
@@ -305,14 +305,14 @@ void StatementGenerator::emitWrite(PascalParser::WriteArgumentsContext *argsCtx,
 }
 
 int StatementGenerator::createWriteFormat(
-                                PascalParser::WriteArgumentsContext *argsCtx,
+                                goParser::WriteArgumentsContext *argsCtx,
                                 string& format, bool needLF)
 {
     int exprCount = 0;
     format += "\"";
 
     // Loop over the write arguments.
-    for (PascalParser::WriteArgumentContext *argCtx : argsCtx->writeArgument())
+    for (goParser::WriteArgumentContext *argCtx : argsCtx->writeArgument())
     {
         Typespec *type = argCtx->expression()->type;
         string argText = argCtx->getText();
@@ -326,14 +326,14 @@ int StatementGenerator::createWriteFormat(
             exprCount++;
             format.append("%");
 
-            PascalParser::FieldWidthContext *fwCtx = argCtx->fieldWidth();
+            goParser::FieldWidthContext *fwCtx = argCtx->fieldWidth();
             if (fwCtx != nullptr)
             {
                 string sign = (   (fwCtx->sign() != nullptr)
                                && (fwCtx->sign()->getText() == "-")) ? "-" : "";
                 format += sign + fwCtx->integerConstant()->getText();
 
-                PascalParser::DecimalPlacesContext *dpCtx =
+                goParser::DecimalPlacesContext *dpCtx =
                                                         fwCtx->decimalPlaces();
                 if (dpCtx != nullptr)
                 {
@@ -356,7 +356,7 @@ int StatementGenerator::createWriteFormat(
 }
 
 void StatementGenerator::emitArgumentsArray(
-                    PascalParser::WriteArgumentsContext *argsCtx, int exprCount)
+                    goParser::WriteArgumentsContext *argsCtx, int exprCount)
 {
     // Create the arguments array.
     emitLoadConstant(exprCount);
@@ -365,11 +365,11 @@ void StatementGenerator::emitArgumentsArray(
     int index = 0;
 
     // Loop over the write arguments to fill the arguments array.
-    for (PascalParser::WriteArgumentContext *argCtx :
+    for (goParser::WriteArgumentContext *argCtx :
                                                 argsCtx->writeArgument())
     {
         string argText = argCtx->getText();
-        PascalParser::ExpressionContext *exprCtx = argCtx->expression();
+        goParser::ExpressionContext *exprCtx = argCtx->expression();
         Typespec *type = exprCtx->type->baseType();
 
         // Skip string constants, which were made part of
@@ -394,17 +394,17 @@ void StatementGenerator::emitArgumentsArray(
     }
 }
 
-void StatementGenerator::emitRead(PascalParser::ReadStatementContext *ctx)
+/*void StatementGenerator::emitRead(goParser::ReadStatementContext *ctx)
 {
     emitRead(ctx->readArguments(), false);
 }
 
-void StatementGenerator::emitReadln(PascalParser::ReadlnStatementContext *ctx)
+void StatementGenerator::emitReadln(goParser::ReadlnStatementContext *ctx)
 {
     emitRead(ctx->readArguments(), true);
 }
 
-void StatementGenerator::emitRead(PascalParser::ReadArgumentsContext *argsCtx,
+void StatementGenerator::emitRead(goParser::ReadArgumentsContext *argsCtx,
                                   bool needSkip)
 {
     int size = argsCtx->variable().size();
@@ -412,7 +412,7 @@ void StatementGenerator::emitRead(PascalParser::ReadArgumentsContext *argsCtx,
     // Loop over read arguments.
     for (int i = 0; i < size; i++)
     {
-        PascalParser::VariableContext *varCtx = argsCtx->variable()[i];
+        goParser::VariableContext *varCtx = argsCtx->variable()[i];
         Typespec *varType = varCtx->type;
 
         if (varType == Predefined::integerType)
@@ -467,5 +467,5 @@ void StatementGenerator::emitRead(PascalParser::ReadArgumentsContext *argsCtx,
         emit(POP);
     }
 }
-
+*/
 }} // namespace backend::compiler
