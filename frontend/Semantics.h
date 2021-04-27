@@ -139,7 +139,7 @@ public:
     Object visitLhs(goParser::LhsContext *ctx) override;
     Object visitIfStatement(goParser::IfStatementContext *ctx) override;
     Object visitCaseStatement(goParser::CaseStatementContext *ctx) override;
-    Object visitRepeatStatement(goParser::RepeatStatementContext *ctx) override;
+    //Object visitRepeatStatement(goParser::RepeatStatementContext *ctx) override;
     Object visitWhileStatement(goParser::WhileStatementContext *ctx) override;
     Object visitForStatement(goParser::ForStatementContext *ctx) override;
     Object visitProcedureCallStatement(goParser::ProcedureCallStatementContext *ctx) override;

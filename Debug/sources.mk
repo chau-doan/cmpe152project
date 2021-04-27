@@ -31,4 +31,5 @@ frontend \
 intermediate/symtab \
 intermediate/type \
 intermediate/util \
+target/generated-sources/antlr4 \
 

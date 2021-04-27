@@ -35,7 +35,7 @@ public:
     Object visitAssignmentStatement(goParser::AssignmentStatementContext *ctx) override;
     Object visitIfStatement(goParser::IfStatementContext *ctx) override;
     Object visitCaseStatement(goParser::CaseStatementContext *ctx) override;
-    Object visitRepeatStatement(goParser::RepeatStatementContext *ctx) override;
+    //Object visitRepeatStatement(goParser::RepeatStatementContext *ctx) override;
     Object visitWhileStatement(goParser::WhileStatementContext *ctx) override;
     Object visitForStatement(goParser::ForStatementContext *ctx) override;
     Object visitProcedureCallStatement(goParser::ProcedureCallStatementContext *ctx) override;
@@ -52,8 +52,8 @@ public:
     Object visitParenthesizedFactor(goParser::ParenthesizedFactorContext *ctx) override;
     Object visitWritelnStatement(goParser::WritelnStatementContext *ctx) override;
     Object visitWriteArguments(goParser::WriteArgumentsContext *ctx) override;
-    Object visitReadlnStatement(goParser::ReadlnStatementContext *ctx) override;
-    Object visitReadArguments(goParser::ReadArgumentsContext *ctx) override;
+    //Object visitReadlnStatement(goParser::ReadlnStatementContext *ctx) override;
+    //Object visitReadArguments(goParser::ReadArgumentsContext *ctx) override;
 
 private:
     /**

@@ -62,7 +62,7 @@ public:
     Object visitIfStatement(goParser::IfStatementContext *ctx) override;
     Object visitCaseStatement(goParser::CaseStatementContext *ctx) override;
     Object visitCaseBranch(goParser::CaseBranchContext *ctx) override;
-    Object visitRepeatStatement(goParser::RepeatStatementContext *ctx) override;
+    //Object visitRepeatStatement(goParser::RepeatStatementContext *ctx) override;
     Object visitWhileStatement(goParser::WhileStatementContext *ctx) override;
     Object visitForStatement(goParser::ForStatementContext *ctx) override;
     Object visitProcedureCallStatement(goParser::ProcedureCallStatementContext *ctx) override;
@@ -80,9 +80,9 @@ public:
     Object visitParenthesizedFactor(goParser::ParenthesizedFactorContext *ctx) override;
     Object visitWriteStatement(goParser::WriteStatementContext *ctx) override;
     Object visitWritelnStatement(goParser::WritelnStatementContext *ctx) override;
-    Object visitReadStatement(goParser::ReadStatementContext *ctx) override;
-    Object visitReadlnStatement(goParser::ReadlnStatementContext *ctx) override;
-    Object visitReadArguments(goParser::ReadArgumentsContext *ctx) override;
+    //Object visitReadStatement(goParser::ReadStatementContext *ctx) override;
+    //Object visitReadlnStatement(goParser::ReadlnStatementContext *ctx) override;
+    //Object visitReadArguments(goParser::ReadArgumentsContext *ctx) override;
 
 private:
     // Map a go datatype name to the C++ datatype name.

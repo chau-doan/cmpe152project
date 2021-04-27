@@ -1,4 +1,11 @@
 
+    #include <map>
+    #include "intermediate/symtab/Symtab.h"
+    #include "intermediate/type/Typespec.h"
+    using namespace intermediate::symtab;
+    using namespace intermediate::type;
+
+
 // Generated from go.g4 by ANTLR 4.7.2
 
 #pragma once
@@ -19,207 +26,193 @@ public:
   /**
    * Visit parse trees produced by goParser.
    */
-    virtual antlrcpp::Any visitSourceFile(goParser::SourceFileContext *context) = 0;
+    virtual antlrcpp::Any visitProgram(goParser::ProgramContext *context) = 0;
 
-    virtual antlrcpp::Any visitPackageClause(goParser::PackageClauseContext *context) = 0;
+    virtual antlrcpp::Any visitProgramHeader(goParser::ProgramHeaderContext *context) = 0;
 
-    virtual antlrcpp::Any visitImportDecl(goParser::ImportDeclContext *context) = 0;
-
-    virtual antlrcpp::Any visitImportSpec(goParser::ImportSpecContext *context) = 0;
-
-    virtual antlrcpp::Any visitImportPath(goParser::ImportPathContext *context) = 0;
-
-    virtual antlrcpp::Any visitTopLevelDecl(goParser::TopLevelDeclContext *context) = 0;
-
-    virtual antlrcpp::Any visitDeclaration(goParser::DeclarationContext *context) = 0;
-
-    virtual antlrcpp::Any visitConstDecl(goParser::ConstDeclContext *context) = 0;
-
-    virtual antlrcpp::Any visitConstSpec(goParser::ConstSpecContext *context) = 0;
-
-    virtual antlrcpp::Any visitIdentifierList(goParser::IdentifierListContext *context) = 0;
-
-    virtual antlrcpp::Any visitExpressionList(goParser::ExpressionListContext *context) = 0;
-
-    virtual antlrcpp::Any visitTypeDecl(goParser::TypeDeclContext *context) = 0;
-
-    virtual antlrcpp::Any visitTypeSpec(goParser::TypeSpecContext *context) = 0;
-
-    virtual antlrcpp::Any visitFunctionDecl(goParser::FunctionDeclContext *context) = 0;
-
-    virtual antlrcpp::Any visitFunction(goParser::FunctionContext *context) = 0;
-
-    virtual antlrcpp::Any visitMethodDecl(goParser::MethodDeclContext *context) = 0;
-
-    virtual antlrcpp::Any visitReceiver(goParser::ReceiverContext *context) = 0;
-
-    virtual antlrcpp::Any visitVarDecl(goParser::VarDeclContext *context) = 0;
-
-    virtual antlrcpp::Any visitVarSpec(goParser::VarSpecContext *context) = 0;
+    virtual antlrcpp::Any visitProgramIdentifier(goParser::ProgramIdentifierContext *context) = 0;
 
     virtual antlrcpp::Any visitBlock(goParser::BlockContext *context) = 0;
 
-    virtual antlrcpp::Any visitStatementList(goParser::StatementListContext *context) = 0;
+    virtual antlrcpp::Any visitDeclarations(goParser::DeclarationsContext *context) = 0;
 
-    virtual antlrcpp::Any visitStatement(goParser::StatementContext *context) = 0;
+    virtual antlrcpp::Any visitConstantsPart(goParser::ConstantsPartContext *context) = 0;
 
-    virtual antlrcpp::Any visitSimpleStmt(goParser::SimpleStmtContext *context) = 0;
+    virtual antlrcpp::Any visitConstantDefinitionsList(goParser::ConstantDefinitionsListContext *context) = 0;
 
-    virtual antlrcpp::Any visitExpressionStmt(goParser::ExpressionStmtContext *context) = 0;
+    virtual antlrcpp::Any visitConstantDefinition(goParser::ConstantDefinitionContext *context) = 0;
 
-    virtual antlrcpp::Any visitSendStmt(goParser::SendStmtContext *context) = 0;
+    virtual antlrcpp::Any visitConstantIdentifier(goParser::ConstantIdentifierContext *context) = 0;
 
-    virtual antlrcpp::Any visitIncDecStmt(goParser::IncDecStmtContext *context) = 0;
+    virtual antlrcpp::Any visitConstant(goParser::ConstantContext *context) = 0;
 
-    virtual antlrcpp::Any visitAssignment(goParser::AssignmentContext *context) = 0;
+    virtual antlrcpp::Any visitSign(goParser::SignContext *context) = 0;
 
-    virtual antlrcpp::Any visitAssign_op(goParser::Assign_opContext *context) = 0;
+    virtual antlrcpp::Any visitTypesPart(goParser::TypesPartContext *context) = 0;
 
-    virtual antlrcpp::Any visitShortVarDecl(goParser::ShortVarDeclContext *context) = 0;
+    virtual antlrcpp::Any visitTypeDefinitionsList(goParser::TypeDefinitionsListContext *context) = 0;
 
-    virtual antlrcpp::Any visitEmptyStmt(goParser::EmptyStmtContext *context) = 0;
+    virtual antlrcpp::Any visitTypeDefinition(goParser::TypeDefinitionContext *context) = 0;
 
-    virtual antlrcpp::Any visitLabeledStmt(goParser::LabeledStmtContext *context) = 0;
+    virtual antlrcpp::Any visitTypeIdentifier(goParser::TypeIdentifierContext *context) = 0;
 
-    virtual antlrcpp::Any visitReturnStmt(goParser::ReturnStmtContext *context) = 0;
+    virtual antlrcpp::Any visitSimpleTypespec(goParser::SimpleTypespecContext *context) = 0;
 
-    virtual antlrcpp::Any visitBreakStmt(goParser::BreakStmtContext *context) = 0;
+    virtual antlrcpp::Any visitArrayTypespec(goParser::ArrayTypespecContext *context) = 0;
 
-    virtual antlrcpp::Any visitContinueStmt(goParser::ContinueStmtContext *context) = 0;
+    virtual antlrcpp::Any visitRecordTypespec(goParser::RecordTypespecContext *context) = 0;
 
-    virtual antlrcpp::Any visitGotoStmt(goParser::GotoStmtContext *context) = 0;
+    virtual antlrcpp::Any visitTypeIdentifierTypespec(goParser::TypeIdentifierTypespecContext *context) = 0;
 
-    virtual antlrcpp::Any visitFallthroughStmt(goParser::FallthroughStmtContext *context) = 0;
+    virtual antlrcpp::Any visitEnumerationTypespec(goParser::EnumerationTypespecContext *context) = 0;
 
-    virtual antlrcpp::Any visitDeferStmt(goParser::DeferStmtContext *context) = 0;
+    virtual antlrcpp::Any visitSubrangeTypespec(goParser::SubrangeTypespecContext *context) = 0;
 
-    virtual antlrcpp::Any visitIfStmt(goParser::IfStmtContext *context) = 0;
+    virtual antlrcpp::Any visitEnumerationType(goParser::EnumerationTypeContext *context) = 0;
 
-    virtual antlrcpp::Any visitSwitchStmt(goParser::SwitchStmtContext *context) = 0;
+    virtual antlrcpp::Any visitEnumerationConstant(goParser::EnumerationConstantContext *context) = 0;
 
-    virtual antlrcpp::Any visitExprSwitchStmt(goParser::ExprSwitchStmtContext *context) = 0;
-
-    virtual antlrcpp::Any visitExprCaseClause(goParser::ExprCaseClauseContext *context) = 0;
-
-    virtual antlrcpp::Any visitExprSwitchCase(goParser::ExprSwitchCaseContext *context) = 0;
-
-    virtual antlrcpp::Any visitTypeSwitchStmt(goParser::TypeSwitchStmtContext *context) = 0;
-
-    virtual antlrcpp::Any visitTypeSwitchGuard(goParser::TypeSwitchGuardContext *context) = 0;
-
-    virtual antlrcpp::Any visitTypeCaseClause(goParser::TypeCaseClauseContext *context) = 0;
-
-    virtual antlrcpp::Any visitTypeSwitchCase(goParser::TypeSwitchCaseContext *context) = 0;
-
-    virtual antlrcpp::Any visitTypeList(goParser::TypeListContext *context) = 0;
-
-    virtual antlrcpp::Any visitSelectStmt(goParser::SelectStmtContext *context) = 0;
-
-    virtual antlrcpp::Any visitCommClause(goParser::CommClauseContext *context) = 0;
-
-    virtual antlrcpp::Any visitCommCase(goParser::CommCaseContext *context) = 0;
-
-    virtual antlrcpp::Any visitRecvStmt(goParser::RecvStmtContext *context) = 0;
-
-    virtual antlrcpp::Any visitForStmt(goParser::ForStmtContext *context) = 0;
-
-    virtual antlrcpp::Any visitForClause(goParser::ForClauseContext *context) = 0;
-
-    virtual antlrcpp::Any visitRangeClause(goParser::RangeClauseContext *context) = 0;
-
-    virtual antlrcpp::Any visitGoStmt(goParser::GoStmtContext *context) = 0;
-
-    virtual antlrcpp::Any visitType(goParser::TypeContext *context) = 0;
-
-    virtual antlrcpp::Any visitTypeName(goParser::TypeNameContext *context) = 0;
-
-    virtual antlrcpp::Any visitTypeLit(goParser::TypeLitContext *context) = 0;
+    virtual antlrcpp::Any visitSubrangeType(goParser::SubrangeTypeContext *context) = 0;
 
     virtual antlrcpp::Any visitArrayType(goParser::ArrayTypeContext *context) = 0;
 
-    virtual antlrcpp::Any visitArrayLength(goParser::ArrayLengthContext *context) = 0;
+    virtual antlrcpp::Any visitArrayDimensionList(goParser::ArrayDimensionListContext *context) = 0;
 
-    virtual antlrcpp::Any visitElementType(goParser::ElementTypeContext *context) = 0;
+    virtual antlrcpp::Any visitRecordType(goParser::RecordTypeContext *context) = 0;
 
-    virtual antlrcpp::Any visitPointerType(goParser::PointerTypeContext *context) = 0;
+    virtual antlrcpp::Any visitRecordFields(goParser::RecordFieldsContext *context) = 0;
 
-    virtual antlrcpp::Any visitInterfaceType(goParser::InterfaceTypeContext *context) = 0;
+    virtual antlrcpp::Any visitVariablesPart(goParser::VariablesPartContext *context) = 0;
 
-    virtual antlrcpp::Any visitSliceType(goParser::SliceTypeContext *context) = 0;
+    virtual antlrcpp::Any visitVariableDeclarationsList(goParser::VariableDeclarationsListContext *context) = 0;
 
-    virtual antlrcpp::Any visitMapType(goParser::MapTypeContext *context) = 0;
+    virtual antlrcpp::Any visitVariableDeclarations(goParser::VariableDeclarationsContext *context) = 0;
 
-    virtual antlrcpp::Any visitChannelType(goParser::ChannelTypeContext *context) = 0;
+    virtual antlrcpp::Any visitVariableIdentifierList(goParser::VariableIdentifierListContext *context) = 0;
 
-    virtual antlrcpp::Any visitMethodSpec(goParser::MethodSpecContext *context) = 0;
+    virtual antlrcpp::Any visitVariableIdentifier(goParser::VariableIdentifierContext *context) = 0;
 
-    virtual antlrcpp::Any visitFunctionType(goParser::FunctionTypeContext *context) = 0;
+    virtual antlrcpp::Any visitRoutinesPart(goParser::RoutinesPartContext *context) = 0;
 
-    virtual antlrcpp::Any visitSignature(goParser::SignatureContext *context) = 0;
+    virtual antlrcpp::Any visitRoutineDefinition(goParser::RoutineDefinitionContext *context) = 0;
 
-    virtual antlrcpp::Any visitResult(goParser::ResultContext *context) = 0;
+    virtual antlrcpp::Any visitFunctionHead(goParser::FunctionHeadContext *context) = 0;
+
+    virtual antlrcpp::Any visitRoutineIdentifier(goParser::RoutineIdentifierContext *context) = 0;
 
     virtual antlrcpp::Any visitParameters(goParser::ParametersContext *context) = 0;
 
-    virtual antlrcpp::Any visitParameterList(goParser::ParameterListContext *context) = 0;
+    virtual antlrcpp::Any visitParameterDeclarationsList(goParser::ParameterDeclarationsListContext *context) = 0;
 
-    virtual antlrcpp::Any visitParameterDecl(goParser::ParameterDeclContext *context) = 0;
+    virtual antlrcpp::Any visitParameterDeclarations(goParser::ParameterDeclarationsContext *context) = 0;
 
-    virtual antlrcpp::Any visitOperand(goParser::OperandContext *context) = 0;
+    virtual antlrcpp::Any visitParameterIdentifierList(goParser::ParameterIdentifierListContext *context) = 0;
 
-    virtual antlrcpp::Any visitLiteral(goParser::LiteralContext *context) = 0;
+    virtual antlrcpp::Any visitParameterIdentifier(goParser::ParameterIdentifierContext *context) = 0;
 
-    virtual antlrcpp::Any visitBasicLit(goParser::BasicLitContext *context) = 0;
+    virtual antlrcpp::Any visitStatement(goParser::StatementContext *context) = 0;
 
-    virtual antlrcpp::Any visitOperandName(goParser::OperandNameContext *context) = 0;
+    virtual antlrcpp::Any visitCompoundStatement(goParser::CompoundStatementContext *context) = 0;
 
-    virtual antlrcpp::Any visitQualifiedIdent(goParser::QualifiedIdentContext *context) = 0;
+    virtual antlrcpp::Any visitEmptyStatement(goParser::EmptyStatementContext *context) = 0;
 
-    virtual antlrcpp::Any visitCompositeLit(goParser::CompositeLitContext *context) = 0;
+    virtual antlrcpp::Any visitStatementList(goParser::StatementListContext *context) = 0;
 
-    virtual antlrcpp::Any visitLiteralType(goParser::LiteralTypeContext *context) = 0;
+    virtual antlrcpp::Any visitAssignmentStatement(goParser::AssignmentStatementContext *context) = 0;
 
-    virtual antlrcpp::Any visitLiteralValue(goParser::LiteralValueContext *context) = 0;
+    virtual antlrcpp::Any visitLhs(goParser::LhsContext *context) = 0;
 
-    virtual antlrcpp::Any visitElementList(goParser::ElementListContext *context) = 0;
+    virtual antlrcpp::Any visitRhs(goParser::RhsContext *context) = 0;
 
-    virtual antlrcpp::Any visitKeyedElement(goParser::KeyedElementContext *context) = 0;
+    virtual antlrcpp::Any visitIfStatement(goParser::IfStatementContext *context) = 0;
 
-    virtual antlrcpp::Any visitKey(goParser::KeyContext *context) = 0;
+    virtual antlrcpp::Any visitTrueStatement(goParser::TrueStatementContext *context) = 0;
 
-    virtual antlrcpp::Any visitElement(goParser::ElementContext *context) = 0;
+    virtual antlrcpp::Any visitFalseStatement(goParser::FalseStatementContext *context) = 0;
 
-    virtual antlrcpp::Any visitStructType(goParser::StructTypeContext *context) = 0;
+    virtual antlrcpp::Any visitCaseStatement(goParser::CaseStatementContext *context) = 0;
 
-    virtual antlrcpp::Any visitFieldDecl(goParser::FieldDeclContext *context) = 0;
+    virtual antlrcpp::Any visitCaseBranchList(goParser::CaseBranchListContext *context) = 0;
 
-    virtual antlrcpp::Any visitAnonymousField(goParser::AnonymousFieldContext *context) = 0;
+    virtual antlrcpp::Any visitCaseBranch(goParser::CaseBranchContext *context) = 0;
 
-    virtual antlrcpp::Any visitFunctionLit(goParser::FunctionLitContext *context) = 0;
+    virtual antlrcpp::Any visitCaseConstant(goParser::CaseConstantContext *context) = 0;
 
-    virtual antlrcpp::Any visitPrimaryExpr(goParser::PrimaryExprContext *context) = 0;
+    virtual antlrcpp::Any visitForStatement(goParser::ForStatementContext *context) = 0;
 
-    virtual antlrcpp::Any visitSelector(goParser::SelectorContext *context) = 0;
+    virtual antlrcpp::Any visitWhileStatement(goParser::WhileStatementContext *context) = 0;
 
-    virtual antlrcpp::Any visitIndex(goParser::IndexContext *context) = 0;
+    virtual antlrcpp::Any visitProcedureCallStatement(goParser::ProcedureCallStatementContext *context) = 0;
 
-    virtual antlrcpp::Any visitSlice(goParser::SliceContext *context) = 0;
+    virtual antlrcpp::Any visitProcedureName(goParser::ProcedureNameContext *context) = 0;
 
-    virtual antlrcpp::Any visitTypeAssertion(goParser::TypeAssertionContext *context) = 0;
+    virtual antlrcpp::Any visitArgumentList(goParser::ArgumentListContext *context) = 0;
 
-    virtual antlrcpp::Any visitArguments(goParser::ArgumentsContext *context) = 0;
+    virtual antlrcpp::Any visitArgument(goParser::ArgumentContext *context) = 0;
 
-    virtual antlrcpp::Any visitMethodExpr(goParser::MethodExprContext *context) = 0;
+    virtual antlrcpp::Any visitWriteStatement(goParser::WriteStatementContext *context) = 0;
 
-    virtual antlrcpp::Any visitReceiverType(goParser::ReceiverTypeContext *context) = 0;
+    virtual antlrcpp::Any visitWritelnStatement(goParser::WritelnStatementContext *context) = 0;
+
+    virtual antlrcpp::Any visitWriteArguments(goParser::WriteArgumentsContext *context) = 0;
+
+    virtual antlrcpp::Any visitWriteArgument(goParser::WriteArgumentContext *context) = 0;
+
+    virtual antlrcpp::Any visitFieldWidth(goParser::FieldWidthContext *context) = 0;
+
+    virtual antlrcpp::Any visitDecimalPlaces(goParser::DecimalPlacesContext *context) = 0;
 
     virtual antlrcpp::Any visitExpression(goParser::ExpressionContext *context) = 0;
 
-    virtual antlrcpp::Any visitUnaryExpr(goParser::UnaryExprContext *context) = 0;
+    virtual antlrcpp::Any visitSimpleExpression(goParser::SimpleExpressionContext *context) = 0;
 
-    virtual antlrcpp::Any visitConversion(goParser::ConversionContext *context) = 0;
+    virtual antlrcpp::Any visitTerm(goParser::TermContext *context) = 0;
 
-    virtual antlrcpp::Any visitEos(goParser::EosContext *context) = 0;
+    virtual antlrcpp::Any visitVariableFactor(goParser::VariableFactorContext *context) = 0;
+
+    virtual antlrcpp::Any visitNumberFactor(goParser::NumberFactorContext *context) = 0;
+
+    virtual antlrcpp::Any visitCharacterFactor(goParser::CharacterFactorContext *context) = 0;
+
+    virtual antlrcpp::Any visitStringFactor(goParser::StringFactorContext *context) = 0;
+
+    virtual antlrcpp::Any visitFunctionCallFactor(goParser::FunctionCallFactorContext *context) = 0;
+
+    virtual antlrcpp::Any visitNotFactor(goParser::NotFactorContext *context) = 0;
+
+    virtual antlrcpp::Any visitParenthesizedFactor(goParser::ParenthesizedFactorContext *context) = 0;
+
+    virtual antlrcpp::Any visitVariable(goParser::VariableContext *context) = 0;
+
+    virtual antlrcpp::Any visitModifier(goParser::ModifierContext *context) = 0;
+
+    virtual antlrcpp::Any visitIndexList(goParser::IndexListContext *context) = 0;
+
+    virtual antlrcpp::Any visitIndex(goParser::IndexContext *context) = 0;
+
+    virtual antlrcpp::Any visitField(goParser::FieldContext *context) = 0;
+
+    virtual antlrcpp::Any visitFunctionCall(goParser::FunctionCallContext *context) = 0;
+
+    virtual antlrcpp::Any visitFunctionName(goParser::FunctionNameContext *context) = 0;
+
+    virtual antlrcpp::Any visitNumber(goParser::NumberContext *context) = 0;
+
+    virtual antlrcpp::Any visitUnsignedNumber(goParser::UnsignedNumberContext *context) = 0;
+
+    virtual antlrcpp::Any visitIntegerConstant(goParser::IntegerConstantContext *context) = 0;
+
+    virtual antlrcpp::Any visitRealConstant(goParser::RealConstantContext *context) = 0;
+
+    virtual antlrcpp::Any visitCharacterConstant(goParser::CharacterConstantContext *context) = 0;
+
+    virtual antlrcpp::Any visitStringConstant(goParser::StringConstantContext *context) = 0;
+
+    virtual antlrcpp::Any visitRelOp(goParser::RelOpContext *context) = 0;
+
+    virtual antlrcpp::Any visitAddOp(goParser::AddOpContext *context) = 0;
+
+    virtual antlrcpp::Any visitMulOp(goParser::MulOpContext *context) = 0;
 
 
 };

@@ -8,6 +8,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include target/generated-sources/antlr4/subdir.mk
 -include intermediate/util/subdir.mk
 -include intermediate/type/subdir.mk
 -include intermediate/symtab/subdir.mk
