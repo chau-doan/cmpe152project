@@ -16,8 +16,8 @@ programIdentifier   locals [ SymtabEntry *entry = nullptr ]
     : IDENTIFIER ;
 
 block         : declarations compoundStatement ;
-declarations  : ( constantsPart ';' )? ( typesPart ';' )? 
-                ( variablesPart ';' )? ( routinesPart ';')? ;
+declarations  : ( constantsPart  )? ( typesPart  )? 
+                ( variablesPart  )? ( routinesPart )? ;
 
 constantsPart           : CONST constantDefinitionsList ;
 constantDefinitionsList : constantDefinition ( ';' constantDefinition )* ;
@@ -65,9 +65,9 @@ recordType          locals [ SymtabEntry *entry = nullptr ]
     : RECORD recordFields ';'? END ;
 recordFields : variableDeclarationsList ;
  
-variablesPart            : VAR variableDeclarationsList ;
+variablesPart            : VAR ' ' variableDeclarationsList ;
 variableDeclarationsList : variableDeclarations;
-variableDeclarations     : variableIdentifierList ':' typeSpecification ;
+variableDeclarations     : variableIdentifierList ' ' typeSpecification ;
 variableIdentifierList   : variableIdentifier ( ',' variableIdentifier )* ;
 
 variableIdentifier  locals [ Typespec *type = nullptr, SymtabEntry *entry = nullptr ] 
@@ -97,6 +97,7 @@ statement : compoundStatement
           | writelnStatement
           | procedureCallStatement
           | emptyStatement
+          | declarations
           ;
 
 compoundStatement : '{' statementList '}' ;
@@ -238,6 +239,7 @@ FUNC 	  : F U N C ;
 SWITCH    : S W I T C H;		
 DEFAULT   : D E F A U L T;
 FMT 	  : F M T;	
+IMPORT    : I M P O R T;
 
 
 IDENTIFIER : [a-zA-Z][a-zA-Z0-9]* ;
@@ -264,5 +266,4 @@ fragment STRING_CHAR : QUOTE QUOTE  // two consecutive quotes
 
 COMMENT : '/*' COMMENT_CHARACTER* '*/' -> skip ;
 
-fragment COMMENT_CHARACTER : ~('}') ;
-                     
+fragment COMMENT_CHARACTER : ~('}') ;                   
