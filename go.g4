@@ -81,7 +81,7 @@ routineIdentifier   locals [ Typespec *type = nullptr, SymtabEntry *entry = null
 
 parameters                : '(' parameterDeclarationsList? ')' ;
 parameterDeclarationsList : parameterDeclarations ( ';' parameterDeclarations )* ;
-parameterDeclarations     : VAR? parameterIdentifierList ':' typeIdentifier ;
+parameterDeclarations     : VAR? parameterIdentifierList ' ' typeIdentifier ;
 parameterIdentifierList   : parameterIdentifier ( ',' parameterIdentifier )* ;
 
 parameterIdentifier   locals [ Typespec *type = nullptr, SymtabEntry *entry = nullptr ]
