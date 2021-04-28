@@ -8,8 +8,9 @@ grammar go;
     using namespace intermediate::type;
 }
 
-program           : programHeader functionHead block ;
+program           : programHeader imp_clause functionHead block ;
 programHeader     : PACKAGE ' ' programIdentifier  '\n';
+imp_clause : IMPORT ' ' '"' FMT '"' '\n';
 
 programIdentifier   locals [ SymtabEntry *entry = nullptr ]
     : IDENTIFIER ;
