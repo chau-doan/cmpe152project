@@ -1,4 +1,4 @@
 package main
-{
-fmt.Println('hello world')
+func main() {
+  fmt.Println('hello world')
 }.
