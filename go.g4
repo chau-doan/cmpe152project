@@ -8,7 +8,7 @@ grammar go;
     using namespace intermediate::type;
 }
 
-program           : programHeader block '.' ;
+program           : programHeader functionHead block ;
 programHeader     : PACKAGE ' ' programIdentifier  '\n';
 
 programIdentifier   locals [ SymtabEntry *entry = nullptr ]
@@ -74,7 +74,7 @@ variableIdentifier  locals [ Typespec *type = nullptr, SymtabEntry *entry = null
 
 routinesPart      : routineDefinition (routineDefinition)* ;
 routineDefinition : functionHead '(' parameters ')' TYPE? block ;
-functionHead      : FUNC ' ' routineIdentifier parameters? ':' typeIdentifier ;
+functionHead      : FUNC ' ' routineIdentifier parameters? ' ' typeIdentifier? ;
 
 routineIdentifier   locals [ Typespec *type = nullptr, SymtabEntry *entry = nullptr ]
     : IDENTIFIER ;
